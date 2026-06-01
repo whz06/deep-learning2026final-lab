@@ -1,0 +1,2 @@
+name,input_dim,d_proj,K,hidden,layers,dropout,lr,n_sample,best_val_rankic,best_epoch,total_epochs,time_min,avg_ep_s,params
+gru_spatial_v7_d32_K5_H128_L1_D0.2_lr0.0003_N1024,26,32,5,128,1,0.2,0.0003,1024,0.10619,30,44,17.5,23.9,82561

@@ -1,0 +1,2 @@
+name,input_dim,hidden,layers,dropout,lr,n_sample,amp,compile,best_val_rankic,best_epoch,total_epochs,time_min,avg_ep_s,params
+gru_v7_H128_L1_D0.2_lr0.0003_N2048,26,128,1,0.2,0.0003,2048,True,True,0.102345,14,28,11.4,24.5,68225
