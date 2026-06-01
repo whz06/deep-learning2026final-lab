@@ -1,0 +1,52 @@
+{
+  "n_days": 74,
+  "date_range": [
+    "20260202",
+    "20260529"
+  ],
+  "layer1": {
+    "mom_5d": {
+      "mean_ic": -0.0036,
+      "ic_std": 0.1463,
+      "ic_pos_pct": 0.5,
+      "n_valid_days": 74
+    },
+    "mom_20d": {
+      "mean_ic": -0.0083,
+      "ic_std": 0.153,
+      "ic_pos_pct": 0.473,
+      "n_valid_days": 74
+    },
+    "mom_60d": {
+      "mean_ic": -0.0144,
+      "ic_std": 0.1544,
+      "ic_pos_pct": 0.432,
+      "n_valid_days": 74
+    },
+    "ic_correlations": {
+      "5d_vs_20d": 0.5225434425937526,
+      "5d_vs_60d": 0.1381139982390812,
+      "20d_vs_60d": 0.5911306745385991
+    }
+  },
+  "layer2": {
+    "gru_w60": {
+      "mean_ic": 0.0423,
+      "ic_std": 0.1481,
+      "ic_pos_pct": 0.635,
+      "n_valid_days": 74
+    },
+    "gru_w90": {
+      "mean_ic": 0.043,
+      "ic_std": 0.1469,
+      "ic_pos_pct": 0.649,
+      "n_valid_days": 74
+    },
+    "ic_correlation": 0.9974857033301403,
+    "score_rank_correlation_mean": 0.9876,
+    "score_rank_correlation_std": 0.0037,
+    "n_common_days": 74
+  },
+  "recommendation": "BORDERLINE",
+  "reason": "Mixed signals: L1 IC corr mean=0.417262705123811, L2 rank corr mean=0.9876. Proceed with training but keep T=60 as fallback."
+}

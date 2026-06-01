@@ -1,0 +1,14 @@
+{
+  "name": "best",
+  "window_size": 60,
+  "hidden_size": 128,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "bidirectional": false,
+  "lr": 0.0005,
+  "batch_size": 2048,
+  "best_val_rankic": 0.102759,
+  "best_epoch": 14,
+  "total_epochs": 29,
+  "train_time_s": 1351.5
+}

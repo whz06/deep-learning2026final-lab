@@ -1,0 +1,14 @@
+data/daily/
+data/metric/
+data/moneyflow/
+data/index_weight/
+processed/
+*/checkpoints/*.pt
+__pycache__/
+*.pyc
+trade/buy_list.txt
+trade/sell_list.txt
+trade/decision.log
+*/results/*.parquet
+*/results/*.csv
+*.log

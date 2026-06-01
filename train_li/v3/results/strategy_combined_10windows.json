@@ -1,0 +1,681 @@
+{
+  "strategy": "COMBINED: Momentum(csi5d<-1%) + Dispersion(score_std>P95 | score_std<P10)",
+  "full_period": {
+    "baseline": {
+      "strategy": "BASELINE",
+      "cum_return": 0.02335827797402157,
+      "cum_csi300": 0.06212551259389976,
+      "excess_vs_csi300": -0.03876723461987819,
+      "mean_daily": 0.04943812504502591,
+      "std_daily": 1.9051224043713217,
+      "sharpe": 0.41030717509746184,
+      "max_drawdown": -0.06211817647058826,
+      "worst_day": -6.211817647058823,
+      "best_day": 4.647510084033613,
+      "days_at_reduced": 0,
+      "mean_weight": 1.0
+    },
+    "strategy_b": {
+      "strategy": "STRATEGY_B",
+      "cum_return": 0.0684530278406228,
+      "cum_csi300": 0.06212551259389976,
+      "excess_vs_csi300": 0.006327515246723037,
+      "mean_daily": 0.10531320030188085,
+      "std_daily": 1.777085951621258,
+      "sharpe": 0.9370103351828551,
+      "max_drawdown": -0.04969454117647065,
+      "worst_day": -4.969454117647059,
+      "best_day": 4.647510084033613,
+      "days_at_reduced": 18,
+      "mean_weight": 0.9513513513513514
+    },
+    "combined": {
+      "strategy": "COMBINED",
+      "cum_return": 0.07670048080200265,
+      "cum_csi300": 0.06212551259389976,
+      "excess_vs_csi300": 0.01457496820810289,
+      "mean_daily": 0.11441749987567831,
+      "std_daily": 1.703765666115284,
+      "sharpe": 1.0618241433816213,
+      "max_drawdown": -0.04969454117647043,
+      "worst_day": -4.969454117647059,
+      "best_day": 4.647510084033613,
+      "days_at_reduced": 28,
+      "mean_weight": 0.9243243243243242
+    },
+    "p95_score_std": 0.5026191085577011,
+    "p10_score_std": 0.3916248261928558
+  },
+  "windows": [
+    {
+      "segment": "W1",
+      "start_date": "20260203",
+      "end_date": "20260224",
+      "n_days": 10,
+      "baseline": {
+        "strategy": "baseline",
+        "cum_return": 0.05371676874294695,
+        "cum_csi300": 0.022050770402502806,
+        "excess_vs_csi300": 0.031665998340444146,
+        "mean_daily": 0.52939408493059,
+        "std_daily": 0.9830716308316026,
+        "sharpe": 8.51459362521292,
+        "max_drawdown": -0.00968068103448283,
+        "worst_day": -0.9680681034482758,
+        "best_day": 2.527710344827587,
+        "days_at_reduced": 0,
+        "mean_weight": 1.0
+      },
+      "strategy_b": {
+        "strategy": "StratB",
+        "cum_return": 0.05371676874294695,
+        "cum_csi300": 0.022050770402502806,
+        "excess_vs_csi300": 0.031665998340444146,
+        "mean_daily": 0.52939408493059,
+        "std_daily": 0.9830716308316026,
+        "sharpe": 8.51459362521292,
+        "max_drawdown": -0.00968068103448283,
+        "worst_day": -0.9680681034482758,
+        "best_day": 2.527710344827587,
+        "days_at_reduced": 0,
+        "mean_weight": 1.0
+      },
+      "combined": {
+        "strategy": "Combined",
+        "cum_return": 0.04183752185992162,
+        "cum_csi300": 0.022050770402502806,
+        "excess_vs_csi300": 0.019786751457418816,
+        "mean_daily": 0.4140765292276722,
+        "std_daily": 0.8242944911278915,
+        "sharpe": 7.942701134548562,
+        "max_drawdown": -0.009680681034482719,
+        "worst_day": -0.9680681034482758,
+        "best_day": 2.0221682758620694,
+        "days_at_reduced": 4,
+        "mean_weight": 0.9199999999999999
+      },
+      "improvement_combined_vs_stratb": -0.01187924688302533,
+      "trigger_dates_stratb": [],
+      "trigger_dates_combined": [
+        "20260203",
+        "20260204",
+        "20260206",
+        "20260209"
+      ],
+      "extra_triggers": [
+        "20260203",
+        "20260204",
+        "20260206",
+        "20260209"
+      ]
+    },
+    {
+      "segment": "W2",
+      "start_date": "20260211",
+      "end_date": "20260304",
+      "n_days": 10,
+      "baseline": {
+        "strategy": "baseline",
+        "cum_return": -0.05005522010566088,
+        "cum_csi300": -0.025754525473157153,
+        "excess_vs_csi300": -0.024300694632503728,
+        "mean_daily": -0.5017981196581196,
+        "std_daily": 1.4297127582232991,
+        "sharpe": -5.549453813650355,
+        "max_drawdown": -0.036206177966101705,
+        "worst_day": -3.6206177966101687,
+        "best_day": 0.7884762711864406,
+        "days_at_reduced": 0,
+        "mean_weight": 1.0
+      },
+      "strategy_b": {
+        "strategy": "StratB",
+        "cum_return": -0.040569583093993944,
+        "cum_csi300": -0.025754525473157153,
+        "excess_vs_csi300": -0.014815057620836791,
+        "mean_daily": -0.4065318315225264,
+        "std_daily": 1.1555229359298291,
+        "sharpe": -5.562704508052658,
+        "max_drawdown": -0.028964942372881386,
+        "worst_day": -2.896494237288135,
+        "best_day": 0.6410533898305084,
+        "days_at_reduced": 5,
+        "mean_weight": 0.9
+      },
+      "combined": {
+        "strategy": "Combined",
+        "cum_return": -0.040569583093993944,
+        "cum_csi300": -0.025754525473157153,
+        "excess_vs_csi300": -0.014815057620836791,
+        "mean_daily": -0.4065318315225264,
+        "std_daily": 1.1555229359298291,
+        "sharpe": -5.562704508052658,
+        "max_drawdown": -0.028964942372881386,
+        "worst_day": -2.896494237288135,
+        "best_day": 0.6410533898305084,
+        "days_at_reduced": 5,
+        "mean_weight": 0.9
+      },
+      "improvement_combined_vs_stratb": 0.0,
+      "trigger_dates_stratb": [
+        "20260225",
+        "20260226",
+        "20260227",
+        "20260302",
+        "20260303"
+      ],
+      "trigger_dates_combined": [
+        "20260225",
+        "20260226",
+        "20260227",
+        "20260302",
+        "20260303"
+      ],
+      "extra_triggers": []
+    },
+    {
+      "segment": "W3",
+      "start_date": "20260227",
+      "end_date": "20260312",
+      "n_days": 10,
+      "baseline": {
+        "strategy": "baseline",
+        "cum_return": -0.026203735724147248,
+        "cum_csi300": -0.008316799503598538,
+        "excess_vs_csi300": -0.01788693622054871,
+        "mean_daily": -0.24574235507762426,
+        "std_daily": 1.9672957598977818,
+        "sharpe": -1.9750603225503676,
+        "max_drawdown": -0.036206177966101705,
+        "worst_day": -3.6206177966101687,
+        "best_day": 2.5182672268907567,
+        "days_at_reduced": 0,
+        "mean_weight": 1.0
+      },
+      "strategy_b": {
+        "strategy": "StratB",
+        "cum_return": -0.014221798123814189,
+        "cum_csi300": -0.008316799503598538,
+        "excess_vs_csi300": -0.005904998620215651,
+        "mean_daily": -0.12740767711152257,
+        "std_daily": 1.7737548531915635,
+        "sharpe": -1.1357219131459124,
+        "max_drawdown": -0.028964942372881386,
+        "worst_day": -2.896494237288135,
+        "best_day": 2.5182672268907567,
+        "days_at_reduced": 3,
+        "mean_weight": 0.9400000000000001
+      },
+      "combined": {
+        "strategy": "Combined",
+        "cum_return": -0.014221798123814189,
+        "cum_csi300": -0.008316799503598538,
+        "excess_vs_csi300": -0.005904998620215651,
+        "mean_daily": -0.12740767711152257,
+        "std_daily": 1.7737548531915635,
+        "sharpe": -1.1357219131459124,
+        "max_drawdown": -0.028964942372881386,
+        "worst_day": -2.896494237288135,
+        "best_day": 2.5182672268907567,
+        "days_at_reduced": 3,
+        "mean_weight": 0.9400000000000001
+      },
+      "improvement_combined_vs_stratb": 0.0,
+      "trigger_dates_stratb": [
+        "20260227",
+        "20260302",
+        "20260303"
+      ],
+      "trigger_dates_combined": [
+        "20260227",
+        "20260302",
+        "20260303"
+      ],
+      "extra_triggers": []
+    },
+    {
+      "segment": "W4",
+      "start_date": "20260309",
+      "end_date": "20260320",
+      "n_days": 10,
+      "baseline": {
+        "strategy": "baseline",
+        "cum_return": -0.060712198920476634,
+        "cum_csi300": -0.0200470903689417,
+        "excess_vs_csi300": -0.040665108551534934,
+        "mean_daily": -0.6082427731092437,
+        "std_daily": 1.796282066166484,
+        "sharpe": -5.3539267846366085,
+        "max_drawdown": -0.03015647899159668,
+        "worst_day": -3.0156478991596636,
+        "best_day": 2.5182672268907567,
+        "days_at_reduced": 0,
+        "mean_weight": 1.0
+      },
+      "strategy_b": {
+        "strategy": "StratB",
+        "cum_return": -0.048870521922680266,
+        "cum_csi300": -0.0200470903689417,
+        "excess_vs_csi300": -0.028823431553738565,
+        "mean_daily": -0.4878926386554622,
+        "std_daily": 1.5449274126298709,
+        "sharpe": -4.993283112099207,
+        "max_drawdown": -0.024125183193277167,
+        "worst_day": -2.412518319327731,
+        "best_day": 2.5182672268907567,
+        "days_at_reduced": 6,
+        "mean_weight": 0.8800000000000001
+      },
+      "combined": {
+        "strategy": "Combined",
+        "cum_return": -0.048870521922680266,
+        "cum_csi300": -0.0200470903689417,
+        "excess_vs_csi300": -0.028823431553738565,
+        "mean_daily": -0.4878926386554622,
+        "std_daily": 1.5449274126298709,
+        "sharpe": -4.993283112099207,
+        "max_drawdown": -0.024125183193277167,
+        "worst_day": -2.412518319327731,
+        "best_day": 2.5182672268907567,
+        "days_at_reduced": 6,
+        "mean_weight": 0.8800000000000001
+      },
+      "improvement_combined_vs_stratb": 0.0,
+      "trigger_dates_stratb": [
+        "20260313",
+        "20260316",
+        "20260317",
+        "20260318",
+        "20260319",
+        "20260320"
+      ],
+      "trigger_dates_combined": [
+        "20260313",
+        "20260316",
+        "20260317",
+        "20260318",
+        "20260319",
+        "20260320"
+      ],
+      "extra_triggers": []
+    },
+    {
+      "segment": "W5",
+      "start_date": "20260317",
+      "end_date": "20260330",
+      "n_days": 10,
+      "baseline": {
+        "strategy": "baseline",
+        "cum_return": -0.043631523338913514,
+        "cum_csi300": -0.038448583488039034,
+        "excess_vs_csi300": -0.0051829398508744795,
+        "mean_daily": -0.39734756302520996,
+        "std_daily": 3.0777994174822543,
+        "sharpe": -2.0412690228280828,
+        "max_drawdown": -0.06211817647058826,
+        "worst_day": -6.211817647058823,
+        "best_day": 4.647510084033613,
+        "days_at_reduced": 0,
+        "mean_weight": 1.0
+      },
+      "strategy_b": {
+        "strategy": "StratB",
+        "cum_return": -0.02077508126567451,
+        "cum_csi300": -0.038448583488039034,
+        "excess_vs_csi300": 0.017673502222364523,
+        "mean_daily": -0.17335210084033617,
+        "std_daily": 2.6945825224880138,
+        "sharpe": -1.0172029827546127,
+        "max_drawdown": -0.04969454117647054,
+        "worst_day": -4.969454117647059,
+        "best_day": 4.647510084033613,
+        "days_at_reduced": 6,
+        "mean_weight": 0.8800000000000001
+      },
+      "combined": {
+        "strategy": "Combined",
+        "cum_return": -0.025006461919990453,
+        "cum_csi300": -0.038448583488039034,
+        "excess_vs_csi300": 0.013442121568048582,
+        "mean_daily": -0.21751786554621852,
+        "std_daily": 2.6585628768277916,
+        "sharpe": -1.29365359928042,
+        "max_drawdown": -0.04969454117647054,
+        "worst_day": -4.969454117647059,
+        "best_day": 4.647510084033613,
+        "days_at_reduced": 7,
+        "mean_weight": 0.8600000000000001
+      },
+      "improvement_combined_vs_stratb": -0.004231380654315942,
+      "trigger_dates_stratb": [
+        "20260317",
+        "20260318",
+        "20260319",
+        "20260320",
+        "20260323",
+        "20260330"
+      ],
+      "trigger_dates_combined": [
+        "20260317",
+        "20260318",
+        "20260319",
+        "20260320",
+        "20260323",
+        "20260325",
+        "20260330"
+      ],
+      "extra_triggers": [
+        "20260325"
+      ]
+    },
+    {
+      "segment": "W6",
+      "start_date": "20260325",
+      "end_date": "20260408",
+      "n_days": 10,
+      "baseline": {
+        "strategy": "baseline",
+        "cum_return": 0.06210899321332741,
+        "cum_csi300": 0.027003354975015048,
+        "excess_vs_csi300": 0.035105638238312364,
+        "mean_daily": 0.6299632025352514,
+        "std_daily": 2.26975857661461,
+        "sharpe": 4.388393071030132,
+        "max_drawdown": -0.02555445762711861,
+        "worst_day": -2.555445762711865,
+        "best_day": 4.528425423728813,
+        "days_at_reduced": 0,
+        "mean_weight": 1.0
+      },
+      "strategy_b": {
+        "strategy": "StratB",
+        "cum_return": 0.0650707031772455,
+        "cum_csi300": 0.027003354975015048,
+        "excess_vs_csi300": 0.038067348202230455,
+        "mean_daily": 0.6571035133171913,
+        "std_daily": 2.2311095507437533,
+        "sharpe": 4.6567497321868725,
+        "max_drawdown": -0.02555445762711861,
+        "worst_day": -2.555445762711865,
+        "best_day": 4.528425423728813,
+        "days_at_reduced": 2,
+        "mean_weight": 0.96
+      },
+      "combined": {
+        "strategy": "Combined",
+        "cum_return": 0.06046836975753678,
+        "cum_csi300": 0.027003354975015048,
+        "excess_vs_csi300": 0.03346501478252173,
+        "mean_daily": 0.6129377486113089,
+        "std_daily": 2.20417486635614,
+        "sharpe": 4.396836610136417,
+        "max_drawdown": -0.0255544576271185,
+        "worst_day": -2.555445762711865,
+        "best_day": 4.528425423728813,
+        "days_at_reduced": 3,
+        "mean_weight": 0.9400000000000001
+      },
+      "improvement_combined_vs_stratb": -0.004602333419708726,
+      "trigger_dates_stratb": [
+        "20260330",
+        "20260331"
+      ],
+      "trigger_dates_combined": [
+        "20260325",
+        "20260330",
+        "20260331"
+      ],
+      "extra_triggers": [
+        "20260325"
+      ]
+    },
+    {
+      "segment": "W7",
+      "start_date": "20260402",
+      "end_date": "20260416",
+      "n_days": 10,
+      "baseline": {
+        "strategy": "baseline",
+        "cum_return": 0.05662467797227966,
+        "cum_csi300": 0.046518162727104295,
+        "excess_vs_csi300": 0.010106515245175363,
+        "mean_daily": 0.5727601224896738,
+        "std_daily": 2.0323563796194204,
+        "sharpe": 4.4559767129118635,
+        "max_drawdown": -0.02555445762711861,
+        "worst_day": -2.555445762711865,
+        "best_day": 4.528425423728813,
+        "days_at_reduced": 0,
+        "mean_weight": 1.0
+      },
+      "strategy_b": {
+        "strategy": "StratB",
+        "cum_return": 0.05662467797227966,
+        "cum_csi300": 0.046518162727104295,
+        "excess_vs_csi300": 0.010106515245175363,
+        "mean_daily": 0.5727601224896738,
+        "std_daily": 2.0323563796194204,
+        "sharpe": 4.4559767129118635,
+        "max_drawdown": -0.02555445762711861,
+        "worst_day": -2.555445762711865,
+        "best_day": 4.528425423728813,
+        "days_at_reduced": 0,
+        "mean_weight": 1.0
+      },
+      "combined": {
+        "strategy": "Combined",
+        "cum_return": 0.05662467797227966,
+        "cum_csi300": 0.046518162727104295,
+        "excess_vs_csi300": 0.010106515245175363,
+        "mean_daily": 0.5727601224896738,
+        "std_daily": 2.0323563796194204,
+        "sharpe": 4.4559767129118635,
+        "max_drawdown": -0.02555445762711861,
+        "worst_day": -2.555445762711865,
+        "best_day": 4.528425423728813,
+        "days_at_reduced": 0,
+        "mean_weight": 1.0
+      },
+      "improvement_combined_vs_stratb": 0.0,
+      "trigger_dates_stratb": [],
+      "trigger_dates_combined": [],
+      "extra_triggers": []
+    },
+    {
+      "segment": "W8",
+      "start_date": "20260413",
+      "end_date": "20260424",
+      "n_days": 10,
+      "baseline": {
+        "strategy": "baseline",
+        "cum_return": 0.025832745137955415,
+        "cum_csi300": 0.02864375971545985,
+        "excess_vs_csi300": -0.0028110145775044337,
+        "mean_daily": 0.25824370317618583,
+        "std_daily": 0.7607825437111837,
+        "sharpe": 5.367094054560926,
+        "max_drawdown": -0.008154983193277343,
+        "worst_day": -0.815498319327731,
+        "best_day": 2.089586554621849,
+        "days_at_reduced": 0,
+        "mean_weight": 1.0
+      },
+      "strategy_b": {
+        "strategy": "StratB",
+        "cum_return": 0.025832745137955415,
+        "cum_csi300": 0.02864375971545985,
+        "excess_vs_csi300": -0.0028110145775044337,
+        "mean_daily": 0.25824370317618583,
+        "std_daily": 0.7607825437111837,
+        "sharpe": 5.367094054560926,
+        "max_drawdown": -0.008154983193277343,
+        "worst_day": -0.815498319327731,
+        "best_day": 2.089586554621849,
+        "days_at_reduced": 0,
+        "mean_weight": 1.0
+      },
+      "combined": {
+        "strategy": "Combined",
+        "cum_return": 0.026493086231320184,
+        "cum_csi300": 0.02864375971545985,
+        "excess_vs_csi300": -0.0021506734841396646,
+        "mean_daily": 0.2646601737644211,
+        "std_daily": 0.7561279540765065,
+        "sharpe": 5.534307722121514,
+        "max_drawdown": -0.008154983193277343,
+        "worst_day": -0.815498319327731,
+        "best_day": 2.089586554621849,
+        "days_at_reduced": 1,
+        "mean_weight": 0.9800000000000001
+      },
+      "improvement_combined_vs_stratb": 0.0006603410933647691,
+      "trigger_dates_stratb": [],
+      "trigger_dates_combined": [
+        "20260417"
+      ],
+      "extra_triggers": [
+        "20260417"
+      ]
+    },
+    {
+      "segment": "W9",
+      "start_date": "20260421",
+      "end_date": "20260507",
+      "n_days": 10,
+      "baseline": {
+        "strategy": "baseline",
+        "cum_return": 0.03119157894124469,
+        "cum_csi300": 0.03007355858905747,
+        "excess_vs_csi300": 0.0011180203521872212,
+        "mean_daily": 0.3105388235294117,
+        "std_daily": 0.7633539866473579,
+        "sharpe": 6.432205775036338,
+        "max_drawdown": -0.011715873949579736,
+        "worst_day": -1.1715873949579836,
+        "best_day": 1.0851428571428572,
+        "days_at_reduced": 0,
+        "mean_weight": 1.0
+      },
+      "strategy_b": {
+        "strategy": "StratB",
+        "cum_return": 0.03119157894124469,
+        "cum_csi300": 0.03007355858905747,
+        "excess_vs_csi300": 0.0011180203521872212,
+        "mean_daily": 0.3105388235294117,
+        "std_daily": 0.7633539866473579,
+        "sharpe": 6.432205775036338,
+        "max_drawdown": -0.011715873949579736,
+        "worst_day": -1.1715873949579836,
+        "best_day": 1.0851428571428572,
+        "days_at_reduced": 0,
+        "mean_weight": 1.0
+      },
+      "combined": {
+        "strategy": "Combined",
+        "cum_return": 0.03119157894124469,
+        "cum_csi300": 0.03007355858905747,
+        "excess_vs_csi300": 0.0011180203521872212,
+        "mean_daily": 0.3105388235294117,
+        "std_daily": 0.7633539866473579,
+        "sharpe": 6.432205775036338,
+        "max_drawdown": -0.011715873949579736,
+        "worst_day": -1.1715873949579836,
+        "best_day": 1.0851428571428572,
+        "days_at_reduced": 0,
+        "mean_weight": 1.0
+      },
+      "improvement_combined_vs_stratb": 0.0,
+      "trigger_dates_stratb": [],
+      "trigger_dates_combined": [],
+      "extra_triggers": []
+    },
+    {
+      "segment": "W10",
+      "start_date": "20260429",
+      "end_date": "20260515",
+      "n_days": 10,
+      "baseline": {
+        "strategy": "baseline",
+        "cum_return": 0.035201476468471604,
+        "cum_csi300": 0.02130834325812825,
+        "excess_vs_csi300": 0.013893133210343356,
+        "mean_daily": 0.35064899159663865,
+        "std_daily": 0.9029073969347319,
+        "sharpe": 6.140438523657234,
+        "max_drawdown": -0.016423579831932655,
+        "worst_day": -1.6423579831932773,
+        "best_day": 1.126426050420168,
+        "days_at_reduced": 0,
+        "mean_weight": 1.0
+      },
+      "strategy_b": {
+        "strategy": "StratB",
+        "cum_return": 0.0400927531847739,
+        "cum_csi300": 0.02130834325812825,
+        "excess_vs_csi300": 0.01878440992664565,
+        "mean_daily": 0.39713146218487394,
+        "std_daily": 0.8068198559711345,
+        "sharpe": 7.782653969922627,
+        "max_drawdown": -0.013138863865546191,
+        "worst_day": -1.313886386554622,
+        "best_day": 1.126426050420168,
+        "days_at_reduced": 4,
+        "mean_weight": 0.9200000000000002
+      },
+      "combined": {
+        "strategy": "Combined",
+        "cum_return": 0.0400927531847739,
+        "cum_csi300": 0.02130834325812825,
+        "excess_vs_csi300": 0.01878440992664565,
+        "mean_daily": 0.39713146218487394,
+        "std_daily": 0.8068198559711345,
+        "sharpe": 7.782653969922627,
+        "max_drawdown": -0.013138863865546191,
+        "worst_day": -1.313886386554622,
+        "best_day": 1.126426050420168,
+        "days_at_reduced": 4,
+        "mean_weight": 0.9200000000000002
+      },
+      "improvement_combined_vs_stratb": 0.0,
+      "trigger_dates_stratb": [
+        "20260512",
+        "20260513",
+        "20260514",
+        "20260515"
+      ],
+      "trigger_dates_combined": [
+        "20260512",
+        "20260513",
+        "20260514",
+        "20260515"
+      ],
+      "extra_triggers": []
+    }
+  ],
+  "cross_window_summary": {
+    "n_windows": 10,
+    "improvements": [
+      -0.01187924688302533,
+      0.0,
+      0.0,
+      0.0,
+      -0.004231380654315942,
+      -0.004602333419708726,
+      0.0,
+      0.0006603410933647691,
+      0.0,
+      0.0
+    ],
+    "mean_improvement": -0.002005261986368523,
+    "std_improvement": 0.0037473704870961706,
+    "wins": 0,
+    "losses": 3,
+    "ties": 7
+  },
+  "config": {
+    "min_position": 0.8,
+    "window_size": 10,
+    "momentum_trigger": "csi5d < -1.0%",
+    "dispersion_trigger": "score_std > P95 (0.5026) OR score_std < P10 (0.3916)"
+  }
+}

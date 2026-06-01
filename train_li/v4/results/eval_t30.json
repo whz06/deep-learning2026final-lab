@@ -1,0 +1,21 @@
+{
+  "n_days": 74,
+  "n_valid_days_t30": 74,
+  "n_valid_days_t60": 74,
+  "n_common_days": 74,
+  "t30": {
+    "mean_ic": 0.0363,
+    "ic_std": 0.1343,
+    "ic_pos_pct": 0.608
+  },
+  "t60": {
+    "mean_ic": 0.0424,
+    "ic_std": 0.1482,
+    "ic_pos_pct": 0.635
+  },
+  "ic_correlation": 0.9624,
+  "score_rank_correlation_mean": 0.8453,
+  "score_rank_correlation_std": 0.0297,
+  "recommendation": "BORDERLINE",
+  "reason": "Score rank correlation 0.845 in (0.7, 0.9). Moderate diversity. Ensemble may help slightly but gains will be marginal. Consider 0.3*T30 + 0.7*T60 weighting toward the stronger model."
+}
