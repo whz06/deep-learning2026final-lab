@@ -1,15 +1,7 @@
-"""v5/train.py — Train baseline GRU on v5 fixed-feature windows (26-dim).
+"""v6/train_step4.py — Train GRU + Temporal Attention Pooling (Step 4).
 
-Optimizations:
-  - torch.cuda.amp (FP16 mixed precision) → ~1.5x GPU speedup
-  - torch.compile → kernel fusion, ~1.3x GPU speedup
-  - --val-every N → skip validation on non-checkpoint epochs
-
-Usage:
-  python v5/train.py                           # default: H=128 L=1 D=0.2, T=60, N=2048
-  python v5/train.py --val-every 3 --no-compile
+Reuses v5_windows data and v5 dataset, compares against baseline GRU (0.1114).
 """
-
 import os, sys, time, gc, csv, argparse
 import numpy as np
 import torch
@@ -21,18 +13,23 @@ os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF",
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(SCRIPT_DIR)
+
+# v2 imports (loss, metric)
 V2_DIR = os.path.join(ROOT, "v2")
 sys.path.insert(0, V2_DIR)
-
 from train import listmle_loss, rankic
-from models.gru import GRURanker
 
+# v5 dataset
 import importlib.util
 _spec = importlib.util.spec_from_file_location(
-    "v5_dataset", os.path.join(SCRIPT_DIR, "v5_dataset.py"))
+    "v5_dataset", os.path.join(ROOT, "v5", "v5_dataset.py"))
 _v5ds = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_v5ds)
 DailyStockDataset = _v5ds.DailyStockDataset
+
+# v6 model
+sys.path.insert(0, ROOT)
+from v6.models.gru_attn import GRURankerAttn
 
 WINDOW_SIZE = 60
 EPOCHS = 50
@@ -49,16 +46,16 @@ os.makedirs(RESULTS_DIR, exist_ok=True)
 
 
 def train_one(args, device):
-    name = f"gru_v5_H{args.hidden}_L{args.layers}_D{args.dropout}_lr{args.lr}_N{args.n_sample}"
+    name = f"gru_attnpool_H{args.hidden}_L{args.layers}_D{args.dropout}_lr{args.lr}_N{args.n_sample}"
     ckpt_path = os.path.join(CKPT_DIR, f"{name}.pt")
 
-    print(f"\n{'=' * 60}")
-    print(f" v5 Baseline GRU: {name}")
+    print(f"\n{'='*60}")
+    print(f" Step 4: GRU + Temporal AttnPool: {name}")
     print(f"  input_dim={args.input_dim} n_sample={args.n_sample}  "
           f"amp={not args.no_amp} compile={not args.no_compile} val_every={args.val_every}")
-    print(f"{'=' * 60}")
+    print(f"{'='*60}")
 
-    print("[train_v5] Loading dataset ...")
+    print("[step4] Loading dataset ...")
     train_ds = DailyStockDataset("train", WINDOW_SIZE, sample_size=args.n_sample, shuffle=True)
     val_ds = DailyStockDataset("val", WINDOW_SIZE, sample_size=None, shuffle=False)
 
@@ -67,7 +64,7 @@ def train_one(args, device):
     val_loader = DataLoader(val_ds, 1, shuffle=False, num_workers=0,
                             pin_memory=True, collate_fn=lambda x: x[0])
 
-    model = GRURanker(
+    model = GRURankerAttn(
         input_dim=args.input_dim, hidden_size=args.hidden,
         num_layers=args.layers, dropout=args.dropout,
     ).to(device)
@@ -75,12 +72,12 @@ def train_one(args, device):
     if not args.no_compile:
         try:
             model = torch.compile(model, mode="reduce-overhead")
-            print("[train_v5] torch.compile: enabled (reduce-overhead)")
+            print("[step4] torch.compile: enabled (reduce-overhead)")
         except Exception as e:
-            print(f"[train_v5] torch.compile failed: {e} — falling back to eager")
+            print(f"[step4] torch.compile failed: {e} — falling back to eager")
 
     params = sum(p.numel() for p in model.parameters())
-    print(f"[train_v5] Parameters: {params:,}")
+    print(f"[step4] Parameters: {params:,}")
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-5)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
@@ -88,7 +85,7 @@ def train_one(args, device):
     scaler = torch.amp.GradScaler("cuda", enabled=not args.no_amp and device.type == "cuda")
 
     best_ic, best_ep, no_imp = -float("inf"), 0, 0
-    last_val_ic = 0.0  # for scheduler on non-val epochs
+    last_val_ic = 0.0
     t0 = time.time()
     epoch_times = []
 
@@ -159,7 +156,7 @@ def train_one(args, device):
                   flush=True)
 
         if no_imp >= PATIENCE:
-            print(f"  [train_v5] Early stop @ epoch {epoch}")
+            print(f"  [step4] Early stop @ epoch {epoch}")
             break
 
     elapsed = time.time() - t0
@@ -175,15 +172,16 @@ def train_one(args, device):
         "avg_ep_s": round(avg_ep, 1), "params": params,
     }
 
-    cols = result.keys()
+    cols = list(result.keys())
     fe = os.path.exists(RESULTS_CSV)
     with open(RESULTS_CSV, "a", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=list(cols))
-        if not fe: w.writeheader()
+        w = csv.DictWriter(f, fieldnames=cols)
+        if not fe:
+            w.writeheader()
         w.writerow(result)
 
-    print(f"\n[train_v5] DONE: {name} -> IC={best_ic:.4f} @ ep{best_ep} ({elapsed/60:.0f}min)")
-    print(f"[train_v5] Checkpoint -> {ckpt_path}")
+    print(f"\n[step4] DONE: {name} -> IC={best_ic:.4f} @ ep{best_ep} ({elapsed/60:.0f}min)")
+    print(f"[step4] Checkpoint -> {ckpt_path}")
 
     del model, optimizer, scheduler, scaler, train_loader, val_loader
     gc.collect()
@@ -199,17 +197,14 @@ def main():
     parser.add_argument("--dropout", type=float, default=0.2)
     parser.add_argument("--lr", type=float, default=3e-4)
     parser.add_argument("--n_sample", type=int, default=2048)
-    parser.add_argument("--val-every", type=int, default=2,
-                        help="Run validation every N epochs (default 2)")
-    parser.add_argument("--no-amp", action="store_true",
-                        help="Disable mixed precision")
-    parser.add_argument("--no-compile", action="store_true",
-                        help="Disable torch.compile")
+    parser.add_argument("--val-every", type=int, default=2)
+    parser.add_argument("--no-amp", action="store_true")
+    parser.add_argument("--no-compile", action="store_true")
     parser.add_argument("--device", default="cuda")
     args = parser.parse_args()
 
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
-    print(f"[train_v5] device={device}")
+    print(f"[step4] device={device}")
     train_one(args, device)
 
 

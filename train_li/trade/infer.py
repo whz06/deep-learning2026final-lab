@@ -42,6 +42,12 @@ CROSS_COLS = ["pct_chg","amount","turnover_rate"]
 VAL_COLS   = ["pe","pb","circ_mv"]
 INPUT_DIM = 26  # 19 temporal (10 raw + 1 vwap_gap + 8 tech) + 7 cross (4 + 3 valuation)
 
+# Preprocessing constants (must match v5/build_windows.py)
+LOG_COLS = ["vol", "amount", "total_mv"]  # features to log1p transform
+PE_CLIP = (0.1, 500.0)
+PB_CLIP = (0.1, 50.0)
+WINSOR_P = (1, 99)  # percentile range for winsorization
+
 # Strategy B defaults
 STRATEGY_B_THRESHOLD = -1.0   # csi5d below this → risk-off
 STRATEGY_B_MIN_POS   = 0.80   # minimum position (competition rule: >= 80%)
@@ -102,6 +108,13 @@ def normalize_cross(arr):
     """Z-score across N stocks. arr: [N, F]"""
     m, s = arr.mean(axis=0, keepdims=True), arr.std(axis=0, keepdims=True) + 1e-8
     return (arr - m) / s
+
+
+def winsorize_2d(arr, p_low=1, p_high=99):
+    """Clip per-column to [p_low, p_high] percentile across rows."""
+    lo = np.percentile(arr, p_low, axis=0, keepdims=True)
+    hi = np.percentile(arr, p_high, axis=0, keepdims=True)
+    return np.clip(arr, lo, hi)
 
 
 # ===========================================================
@@ -252,6 +265,12 @@ def main():
         sdf = add_technical_indicators(sdf)
         vals_rawtech = sdf[RAW_FEATURES + TECH_FEATURES].values.astype(np.float32)[-WINDOW_SIZE:]
 
+        # v5 preprocessing: log1p for skewed features
+        for col_name in LOG_COLS:
+            if col_name in RAW_FEATURES:
+                idx = RAW_FEATURES.index(col_name)
+                vals_rawtech[:, idx] = np.log1p(np.maximum(vals_rawtech[:, idx], 0))
+
         # vwap_gap: close/vwap - 1
         w_close = sdf["close"].values.astype(np.float32)[-WINDOW_SIZE:]
         w_vwap = sdf["vwap"].values.astype(np.float32)[-WINDOW_SIZE:]
@@ -298,20 +317,30 @@ def main():
     cross_feat[:, 1] = rank_pct(amt_arr)       # amount_rank
     cross_feat[:, 2] = rank_pct(tvr_arr)       # turnover_rate_rank
     cross_feat[:, 3] = pct_arr - idx_pct       # rel_beta
-    cross_feat[:, 4] = rank_pct(pe_arr)        # pe_rank
-    cross_feat[:, 5] = rank_pct(pb_arr)        # pb_rank
+    cross_feat[:, 4] = rank_pct(np.clip(pe_arr, PE_CLIP[0], PE_CLIP[1]))   # pe_rank (clipped)
+    cross_feat[:, 5] = rank_pct(np.clip(pb_arr, PB_CLIP[0], PB_CLIP[1]))   # pb_rank (clipped)
     cross_feat[:, 6] = rank_pct(cm_arr)        # circ_mv_rank
 
     cross_norm = normalize_cross(cross_feat)   # [N, 7] Z-score across stocks
 
+    # ---- Winsorize temporal features across all stocks before per-stock normalize ----
+    temporal_all = []
+    for ts_code in code_list:
+        vals_rawtech, vwap_gap = windows[ts_code]
+        temporal = np.concatenate([vals_rawtech, vwap_gap[:, None]], axis=1)  # [T, 19]
+        temporal_all.append(temporal)
+    temporal_stack = np.stack(temporal_all, axis=0)  # [N, T, 19]
+    N, T, F = temporal_stack.shape
+    temporal_flat = temporal_stack.reshape(-1, F)      # [N*T, 19]
+    temporal_flat = winsorize_2d(temporal_flat, p_low=WINSOR_P[0], p_high=WINSOR_P[1])
+    temporal_stack = temporal_flat.reshape(N, T, F)     # [N, T, 19]
+
     # ---- Build final [N, 60, 26] tensor ----
     batch_feat, batch_code = [], []
     for i, ts_code in enumerate(code_list):
-        vals_rawtech, vwap_gap = windows[ts_code]
-        temporal = np.concatenate([vals_rawtech, vwap_gap[:, None]], axis=1)  # [T, 19]
-        temporal = normalize_temporal(temporal)                                # [T, 19]
-        cross_tiled = np.tile(cross_norm[i], (WINDOW_SIZE, 1))                # [T, 7]
-        feat = np.concatenate([temporal, cross_tiled], axis=-1)               # [T, 26]
+        temporal = normalize_temporal(temporal_stack[i])                    # [T, 19]
+        cross_tiled = np.tile(cross_norm[i], (WINDOW_SIZE, 1))             # [T, 7]
+        feat = np.concatenate([temporal, cross_tiled], axis=-1)            # [T, 26]
         batch_feat.append(feat)
         batch_code.append(ts_code)
 
