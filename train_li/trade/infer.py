@@ -17,6 +17,7 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(SCRIPT_DIR)
@@ -24,6 +25,7 @@ PARQUET_PATH = os.path.join(ROOT, "processed", "all_data.parquet")
 INDEX_PATH   = os.path.join(ROOT, "data", "market", "000300.SH.csv")
 CKPT_DIR     = os.path.join(ROOT, "v2", "checkpoints")
 CKPT_DIR_V5  = os.path.join(ROOT, "v5", "checkpoints")
+CKPT_DIR_V6  = os.path.join(ROOT, "v6", "checkpoints")
 
 BUY_PATH  = os.path.join(SCRIPT_DIR, "buy_list.txt")
 SELL_PATH = os.path.join(SCRIPT_DIR, "sell_list.txt")
@@ -33,7 +35,7 @@ LOG_PATH  = os.path.join(SCRIPT_DIR, "decision.log")
 # Constants
 # ===========================================================
 WINDOW_SIZE = 60
-WARMUP_DAYS = 150
+WARMUP_DAYS = 200
 RAW_FEATURES = ["open","high","low","close","vol","amount","pct_chg",
                 "turnover_rate","volume_ratio","total_mv"]
 TECH_FEATURES = ["macd","macd_signal","rsi","bb_width","bb_pct",
@@ -75,6 +77,52 @@ class GRURanker(nn.Module):
         out, _ = self.gru(x)
         last = out[:, -1, :]
         return self.head(last).squeeze(-1)
+
+
+# ===========================================================
+# Spatial Attention Model (S1 concat, K=5, d_proj=32 — best v6)
+# ===========================================================
+class SparseSpatialAttention(nn.Module):
+    def __init__(self, d_model=128, d_proj=32, K=5):
+        super().__init__()
+        self.query = nn.Linear(d_model, d_proj, bias=False)
+        self.key   = nn.Linear(d_model, d_proj, bias=False)
+        self.value = nn.Linear(d_model, d_proj, bias=False)
+        self.K = K
+        self.scale = d_proj ** 0.5
+
+    def forward(self, h):
+        N = h.size(0)
+        q = self.query(h)
+        k = self.key(h)
+        v = self.value(h)
+        sim = q @ k.T / self.scale
+        sim.fill_diagonal_(-float('inf'))
+        K_eff = min(self.K, N - 1)
+        topk_sim, topk_idx = sim.topk(K_eff, dim=-1)
+        attn = F.softmax(topk_sim, dim=-1)
+        context = (attn.unsqueeze(1) @ v[topk_idx]).squeeze(1)
+        return context
+
+
+class GRURankerSpatialConcat(GRURanker):
+    def __init__(self, input_dim, hidden_size=128, num_layers=1, dropout=0.2,
+                 bidirectional=False, d_proj=32, K=5):
+        super().__init__(input_dim, hidden_size, num_layers, dropout, bidirectional)
+        self.spatial = SparseSpatialAttention(d_model=hidden_size, d_proj=d_proj, K=K)
+        self.head = nn.Sequential(
+            nn.Linear(hidden_size + d_proj, hidden_size // 2),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden_size // 2, 1),
+        )
+
+    def forward(self, x):
+        out, _ = self.gru(x)
+        h = out[:, -1, :]
+        c = self.spatial(h)
+        hc = torch.cat([h, c], dim=-1)
+        return self.head(hc).squeeze(-1)
 
 
 # ===========================================================
@@ -160,11 +208,26 @@ def load_model(ckpt_name, device, ckpt_dir, input_dim=26):
          int(re.search(r"_H(\d+)_", ckpt_base).group(1))
     nl = int(re.search(r"num_layers=(\d+)", ckpt_base).group(1)) if "num_layers" in ckpt_base else \
          int(re.search(r"_L(\d+)_", ckpt_base).group(1))
-    do = float(re.search(r"dropout=([\d.]+)_lr", ckpt_base).group(1)) if "_lr" in ckpt_base else \
+    do = float(re.search(r"dropout=([\d.]+)_lr", ckpt_base).group(1)) if "dropout=" in ckpt_base else \
+         float(re.search(r"_D([\d.]+)_lr", ckpt_base).group(1)) if "_D" in ckpt_base and "_lr" in ckpt_base else \
          float(re.search(r"_D([\d.]+)$", ckpt_base).group(1))
-    model = GRURanker(input_dim=input_dim, hidden_size=hs, num_layers=nl, dropout=do)
+
     ckpt_path = os.path.join(ckpt_dir, ckpt_name)
-    model.load_state_dict(torch.load(ckpt_path, map_location=device, weights_only=True))
+    state = torch.load(ckpt_path, map_location=device, weights_only=True)
+
+    # Detect model type from state_dict keys
+    has_spatial = any("spatial" in k for k in state.keys())
+    has_attn = any("temporal_attn" in k for k in state.keys())
+
+    if has_spatial:
+        d_proj = int(re.search(r"_d(\d+)_", ckpt_base).group(1))
+        K = int(re.search(r"_K(\d+)_", ckpt_base).group(1))
+        model = GRURankerSpatialConcat(input_dim=input_dim, hidden_size=hs,
+                                        num_layers=nl, dropout=do, d_proj=d_proj, K=K)
+    else:
+        model = GRURanker(input_dim=input_dim, hidden_size=hs, num_layers=nl, dropout=do)
+
+    model.load_state_dict(state)
     model.to(device)
     model.eval()
     return model, hs, nl, do
@@ -178,10 +241,10 @@ def main():
     parser.add_argument("--date", type=str, default="",
                         help="Feature cutoff date (YYYYMMDD). Default: latest in data.")
     parser.add_argument("--ckpt", type=str,
-                        default="gru_v5_H128_L1_D0.2_lr0.0003_N2048.pt",
-                        help="Checkpoint filename in v5/checkpoints/")
-    parser.add_argument("--ckpt-dir", type=str, default="v5",
-                        help="Checkpoint directory: v2 or v5")
+                        default="gru_spatial_concat_d32_K5_H128_L1_D0.2_lr0.0003_N1024.pt",
+                        help="Checkpoint filename")
+    parser.add_argument("--ckpt-dir", type=str, default="v6",
+                        help="Checkpoint directory: v2, v5, or v6")
     parser.add_argument("--top-n", type=int, default=20, help="Buy candidates at 100%% position")
     parser.add_argument("--bottom-k", type=int, default=5, help="Sell candidates at 100%% position")
     parser.add_argument("--device", default="cuda")
@@ -195,10 +258,11 @@ def main():
     # ------------------------------------------------------------------
     # 1. Load model
     # ------------------------------------------------------------------
-    ckpt_dir = CKPT_DIR_V5 if args.ckpt_dir == "v5" else CKPT_DIR
-    input_dim = 26 if args.ckpt_dir == "v5" else 22
+    ckpt_dir_map = {"v2": CKPT_DIR, "v5": CKPT_DIR_V5, "v6": CKPT_DIR_V6}
+    ckpt_dir = ckpt_dir_map.get(args.ckpt_dir, CKPT_DIR_V5)
+    input_dim = 22 if args.ckpt_dir == "v2" else 26
     model, hs, nl, do = load_model(args.ckpt, device, ckpt_dir, input_dim)
-    print(f"[infer] Model: GRU H={hs} L={nl} D={do} input_dim={input_dim}")
+    print(f"[infer] Model: {'GRU+spatial' if any('spatial' in k for k in model.state_dict().keys()) else 'GRU'} H={hs} L={nl} D={do} input_dim={input_dim}")
 
     # ------------------------------------------------------------------
     # 2. Load data
@@ -223,7 +287,7 @@ def main():
     # ------------------------------------------------------------------
     csi = pd.read_csv(INDEX_PATH, dtype={"trade_date": str})
     csi["trade_date"] = csi["trade_date"].astype(str)
-    idx_map = dict(zip(csi["trade_date"], csi["pct_chg"].astype(float)))
+    idx_map = dict(zip(csi["trade_date"], csi["pct_chg"].astype(np.float32)))
     idx_pct = idx_map.get(latest_date, 0.0)
 
     csi_series = pd.Series(idx_map.values(), index=list(idx_map.keys()))
@@ -262,6 +326,8 @@ def main():
         sdf = sdf[sdf["trade_date"] <= latest_date]
         if len(sdf) < WINDOW_SIZE:
             continue
+        # Forward-fill NaN in raw OHLCV (some dates have missing data)
+        sdf = sdf.ffill()
         sdf = add_technical_indicators(sdf)
         vals_rawtech = sdf[RAW_FEATURES + TECH_FEATURES].values.astype(np.float32)[-WINDOW_SIZE:]
 
@@ -348,7 +414,7 @@ def main():
     # 6. Model inference
     # ------------------------------------------------------------------
     print(f"[infer] Predicting {len(batch_feat)} stocks ...")
-    batch_tensor = torch.from_numpy(np.stack(batch_feat)).to(device)
+    batch_tensor = torch.from_numpy(np.stack(batch_feat)).float().to(device)
 
     with torch.no_grad():
         all_scores = model(batch_tensor).cpu().numpy()
