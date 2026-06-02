@@ -117,12 +117,16 @@ v5 已训练完成，结果优于 v2：
 
 ## 六、sharedcontext 文档索引
 
-移动后 `sharedcontext/` 有 9 个文件：
+移动后 `sharedcontext/` 有 13 个文件：
 
 | 文件 | 内容 |
 |------|------|
-| `PROJECT.md` | 项目结构、数据流、路径映射 |
+| `PROJECT.md` | 项目结构、数据流、路径映射、Best Models、Trading Strategy |
 | `EXPERIMENTS.md` | V1→V4 所有实验记录 |
+| `EXP_V6.md` | V6 空间注意力（Step 3/4）完整实验报告 |
+| `EXP_V7.md` | V7 T+1 标签训练 + sweep + 回测完整报告 |
+| `EXP_V8.md` | V8 特征扩展 + 行业信息 + 损失对比 + 减仓指标优化完整报告（总结失败教训） |
+| `EXP_STEP3_STEP4.md` | 时空注意力 Step 3/4 原始记录 |
 | `KEY_DECISIONS.md` | 关键设计决策 + 失败方案汇总 |
 | `PLAN_CRITIQUE.md` | 对《初步计划.md》的批判性分析（含 KNN proxy 验证结果） |
 | `SPATIAL_ATTENTION_PLAN.md` | 旧空间注意力 Phase 1-4 计划（已归档） |
@@ -136,7 +140,9 @@ v5 已训练完成，结果优于 v2：
 在新对话中，让大模型工具先读这个文件：
 
 ```
-请先读取 sharedcontext/PROJECT.md 了解项目结构，然后读取 TRANSFER_PLAN.md 了解当前进度。
+请先读取 sharedcontext/PROJECT.md 了解项目结构与当前最优配置，
+然后读取 sharedcontext/TRANSFER_PLAN.md 了解进度历史。
+```
 ```
 
 ## 八、待完成任务（更新后）
@@ -147,8 +153,10 @@ v5 已训练完成，结果优于 v2：
 - [x] 创建 `train_li/.gitignore`
 - [x] 创建 `train_wu/`、`train_wang/` 脚手架
 - [x] 重写根 `README.md`
-- [ ] 验证 `trade/infer.py` 用 v5 checkpoint 推理效果
-- [ ] 修复 `trade/infer.py` 预处理（缺少 log1p、winsorization、PE/PB clip）
-- [ ] 如果 v5 推理验证通过，删除 `processed/v2_windows/`（~26GB）
-- [ ] push 到 GitHub
+- [x] v6/v7 实验完成（T+5→T+1，Spatial 架构，N=5 K=3 => best）
+- [x] `trade/infer.py` 修复对齐（log1p+winsor+PE/PB clip + CSI5d th=-1.0% Strategy B）
+- [x] 推送 `COLLAB_PROMPT.txt` 到 GitHub
+- [x] v8 特征扩展 + 损失对比 + 行业策略 + 减仓指标优化全面实验（详见 EXP_V8.md，所有方向均未超 v7 baseline）
+- [x] 交易成本净值模型验证（全周期 Jan-May 2026, 94 天, 扣成本排名不变）
+- [x] CSI5d < -1.0% 确认为最优减仓指标（全周期 + 扣成本验证通过）
 - [ ] 通知 wu 和 wang 克隆仓库并放入自己的代码

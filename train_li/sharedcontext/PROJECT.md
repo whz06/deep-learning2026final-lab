@@ -11,56 +11,29 @@ train_li/
 │   └── preprocess.py          # Merges data/daily/*.csv + data/metric/*.csv → processed/all_data.parquet
 ├── data/
 │   ├── daily/                 # Daily stock CSV files (one per date, ~5000 stocks)
-│   └── market/000300.SH.csv   # CSI300 index daily returns (for csi5d, csi10d, etc.)
+│   ├── metric/                # Daily financial metrics (pe/pb/circ_mv etc.)
+│   ├── moneyflow/             # Daily money flow (19 cols: buy/sell by size class)
+│   ├── market/000300.SH.csv   # CSI300 index daily returns
+│   └── basic.csv              # Stock info (ts_code, name, industry, market, list_date)
 ├── processed/
-│   ├── all_data.parquet       # Main feature source (328 MB, 2019–2026), output of shared/preprocess.py
-│   └── v2_windows/            # Pre-built .pt window files for training (train/ + val/ by year)
+│   ├── all_data.parquet       # Main feature source (2016–2026, ~4959 stocks × 2526 dates)
+│   ├── v2_windows/            # Pre-built .pt window files (22-dim, v2 era)
+│   ├── v5_windows/            # 26-dim windows (v5-v7, T+5→T+1)
+│   └── v7_windows/            # 26-dim windows (v7, T+1 label, LABEL_HORIZON=1)
 ├── v1/                        # Initial GRU baseline sweep
-│   └── ...
 ├── v2/                        # Main model development (GRU, MLP, Transformer)
-│   ├── config.py              # WINDOW_SIZE=60, INPUT_DIM=22, sweep grids, model configs
-│   ├── train.py               # Training loop + sweep CLI (ListMLE loss, RankIC metric)
-│   ├── dataset.py             # DailyStockDataset: loads .pt files, auto-truncates features[:, -W:, :]
-│   ├── build_windows.py       # Builds .pt files: OHLCV + tech + cross-sectional → [N,60,22]
-│   ├── infer.py               # Single-model inference (buy/sell list output)
-│   │
-│   ├── models/
-│   │   ├── gru.py             # GRURanker: [B,T,22] → GRU → last hidden → MLP → scalar
-│   │   ├── mlp.py             # MLPRanker: [B,T,22] → flatten → FC stack → scalar
-│   │   └── transformer.py     # TransformerRanker: temporal + spatial attention
-│   │
-│   └── checkpoints/
-│       ├── gru_gru_hidden_size=128_num_layers=1_dropout=0.2_lr=0.0003.pt   ← BEST (IC=0.1029)
-│       ├── tf_tf_d_model=96_n_heads=4_n_temporal_layers=2_n_spatial_layers=1_dropout=0.1_lr=0.0003.pt
-│       ├── mlp_mlp_hidden_dim=1024_n_layers=4_dropout=0.3_lr=0.0005.pt
-│       └── gru_seed{42,123,456,789,1024}.pt   # Seed ensemble checkpoints
-│
 ├── v3/                        # Strategy backtesting & analysis
-│   ├── shared_precompute.py   # Precomputes daily GRU scores + CSI300 signals → benchmark_data.parquet
-│   ├── results/
-│   │   ├── benchmark_data.parquet   # 74-day signal data (Feb-May 2026), 600 sampled stocks
-│   │   ├── strategy_b.json          # Best: momentum stop-loss (+6.85%, sharpe=0.93)
-│   │   ├── strategy_a.json          # High-vol risk-off (+5.58%)
-│   │   ├── strategy_dispersion.json # Score dispersion defense
-│   │   └── diagnose_variance_drag.py # Beta amplification analysis
-│   └── ...
-│
 ├── v4/                        # Multi-window ensemble feasibility
-│   ├── feasibility.py         # L1: momentum alpha proxy IC, L2: GRU W60 vs W90
-│   ├── train_t30.py           # Train T=30 GRU (reuses existing .pt files, auto-truncates)
-│   ├── eval_t30.py            # Compare T=30 vs T=60 on test period
-│   ├── checkpoints/           # T=30 checkpoint goes here
+├── v5/                        # Cross-sectional fix + preprocessing upgrade
+├── v6/                        # Spatial attention (Step 3/4) + T+5 gap diagnosis
+├── v7/                        # T+1 label training → best model (Spatial N=5 K=3)
+├── v8/                        # Feature expansion (moneyflow+Tier1) + industry emb + loss comparison
+│   ├── models/
+│   ├── checkpoints/
 │   └── results/
-│       ├── feasibility.json
-│       └── eval_t30.json      # Post-training evaluation output
-│
 ├── trade/                     # Competition daily inference
-│   ├── infer.py               # Self-contained: features + GRU model + Strategy B + buy/sell output
-│   ├── buy_list.txt           # Next-day buy codes (top-N)
-│   ├── sell_list.txt          # Next-day sell codes (bottom-K)
-│   └── decision.log           # Daily position decisions (append-only)
-│
-└── sharedcontext/              # Project documentation (this folder)
+├── sharedcontext/              # Project documentation (this folder)
+└── .gitignore
 ```
 
 ## Data Flow
@@ -107,12 +80,36 @@ Z-score normalized per-window (cross-sectional mean/std across all stocks on tha
 
 ## Best Models
 
-| Model | Config | Val Rank IC |
-|-------|--------|-------------|
-| **GRU** | H=128, L=1, D=0.2, lr=3e-4, T=60 | **0.1029** |
-| TF | d_model=96, n_heads=4, n_temporal=2, n_spatial=1, D=0.1, lr=3e-4 | 0.1009 |
-| MLP | hidden=1024, n_layers=4, D=0.3, lr=5e-4 | 0.0843 |
-| Fusion (val) | 0.6×GRU + 0.4×TF | 0.1057 |
+### Training Results (Val IC on 2025)
+
+| Version | Model | Config | Val IC |
+|--------|-------|--------|:---:|
+| v2 | GRU | H=128 L=1 D=0.2 lr=3e-4 T=60 (22-dim) | 0.1029 |
+| v2 | TF | d=96 heads=4 temporal=2 spatial=1 D=0.1 | 0.1009 |
+| v5.2 | GRU (T+5) | H=128 L=1 D=0.2 (26-dim, log1p+winsor) | **0.1114** |
+| v6 | Spatial (T+5) | d=32 K=5 concat (26-dim) | **0.1134** |
+| v7 | GRU (T+1) | H=128 L=1 D=0.2 (26-dim) | 0.1023 |
+| v7 | **Spatial (T+1)** | d=32 K=5 concat (26-dim) | **0.1062** ← current best |
+| v8 | Spatial (T+1) | d=32 K=5 concat (31-dim + ind emb) | 0.1037 |
+
+### Test Period Results (Jan 5 – May 29, 2026, 94 days, net of costs)
+
+| Version | Model | N | K | Net Cum | Excess vs CSI300 | Sharpe |
+|---------|-------|:---:|:---:|:---:|:---:|:---:|
+| v2 | GRU | 20 | 5 | — | +6.85% (Feb-May) | 0.93 |
+| v7 | **Spatial** | **5** | **3** | **+65.83%** | **+59.61%** | **5.59** |
+
+### Trading Strategy (Production)
+
+| Parameter | Value | Source |
+|-----------|-------|--------|
+| Model | v7 Spatial T+1 (26-dim, d=32, K=5) | best val+test IC |
+| N_hold | 5 | N/K sweep optimal |
+| K_sell | 3 | N/K sweep optimal |
+| Loss | ListMLE | only viable option (see EXP_V8.md §3) |
+| Position reduction | CSI5d < **-1.0%** → 80% | Strategy B, verified optimal (see EXP_V8.md §6) |
+| Inference script | `trade/infer.py` | supports v2/v5/v6/v7/v8 autodetect, default v7 Spatial |
+
 
 ## Hardware & Constraints
 

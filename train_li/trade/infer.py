@@ -52,7 +52,7 @@ PB_CLIP = (0.1, 50.0)
 WINSOR_P = (1, 99)  # percentile range for winsorization
 
 # Strategy B defaults
-STRATEGY_B_THRESHOLD = -1.0   # csi5d below this → risk-off
+STRATEGY_B_THRESHOLD = -1.0   # csi5d below this → risk-off (verified optimal on full Jan-May 2026)
 STRATEGY_B_MIN_POS   = 0.80   # minimum position (competition rule: >= 80%)
 
 # ===========================================================
