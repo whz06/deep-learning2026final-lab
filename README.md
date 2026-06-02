@@ -1,7 +1,8 @@
 # deep-learning2026final-lab — 过拟合散户小组
 
 > 基于深度学习的 A 股股票排序预测与模拟交易  
-> 课程：深度学习2026大作业
+> 课程：深度学习2026大作业  
+> 项目负责人：li | 成员：wu, wang
 
 ---
 
@@ -11,13 +12,14 @@
 deep-learning2026final-lab/
 ├── .gitignore              ← 仅忽略 IDE 配置和系统垃圾，三人共享，不要改
 ├── README.md               ← 本文件
+├── COLLAB_PROMPT.txt       ← 新成员 AI 工具提示词模板
 ├── LICENSE                 ← MIT
-├── train_li/               ← li 同学的项目
+├── train_li/               ← li 同学的项目（项目负责人）
 ├── train_wu/               ← wu 同学的项目
 └── train_wang/             ← wang 同学的项目
 ```
 
-想了解li同学项目背景和当前进展，建议先阅读 `train_li/sharedcontext/PROJECT.md` 
+想了解 li 同学项目背景和当前进展，建议先阅读 `train_li/sharedcontext/PROJECT.md`。
 
 ---
 
@@ -33,10 +35,12 @@ deep-learning2026final-lab/
 | 6 | **原始数据各自获取** | 课程提供的数据文件各人自己下载，不通过 Git 共享 |
 | 7 | **先 pull 再 push** | 推之前拉取他人更新，避免冲突 |
 | 8 | **不要 force push** | 永远不要 `--force` 推送到 main |
+| 9 | **commit 带上自己的名字** | 格式：`git commit -m "你的名字: 干了什么"`，便于追溯 |
+| 10 | **li 只在本地提交，不主动 push** | li 的修改默认只 commit 到本地，除非明确说"推送到远端" |
 
 ---
 
-## 首次使用
+## 首次使用（新成员）
 
 1. **克隆仓库**
 
@@ -61,4 +65,3 @@ deep-learning2026final-lab/
    git commit -m "你的名字: 干了什么"
    git push
    ```
-
