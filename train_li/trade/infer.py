@@ -26,6 +26,7 @@ INDEX_PATH   = os.path.join(ROOT, "data", "market", "000300.SH.csv")
 CKPT_DIR     = os.path.join(ROOT, "v2", "checkpoints")
 CKPT_DIR_V5  = os.path.join(ROOT, "v5", "checkpoints")
 CKPT_DIR_V6  = os.path.join(ROOT, "v6", "checkpoints")
+CKPT_DIR_V7  = os.path.join(ROOT, "v7", "checkpoints")
 
 BUY_PATH  = os.path.join(SCRIPT_DIR, "buy_list.txt")
 SELL_PATH = os.path.join(SCRIPT_DIR, "sell_list.txt")
@@ -214,6 +215,8 @@ def load_model(ckpt_name, device, ckpt_dir, input_dim=26):
 
     ckpt_path = os.path.join(ckpt_dir, ckpt_name)
     state = torch.load(ckpt_path, map_location=device, weights_only=True)
+    # Strip torch.compile _orig_mod prefix if present
+    state = {k.replace("_orig_mod.", ""): v for k, v in state.items()}
 
     # Detect model type from state_dict keys
     has_spatial = any("spatial" in k for k in state.keys())
@@ -241,10 +244,10 @@ def main():
     parser.add_argument("--date", type=str, default="",
                         help="Feature cutoff date (YYYYMMDD). Default: latest in data.")
     parser.add_argument("--ckpt", type=str,
-                        default="gru_spatial_concat_d32_K5_H128_L1_D0.2_lr0.0003_N1024.pt",
+                        default="gru_spatial_v7_d32_K5_H128_L1_D0.2_lr0.0003_N1024.pt",
                         help="Checkpoint filename")
-    parser.add_argument("--ckpt-dir", type=str, default="v6",
-                        help="Checkpoint directory: v2, v5, or v6")
+    parser.add_argument("--ckpt-dir", type=str, default="v7",
+                        help="Checkpoint directory: v2, v5, v6, or v7")
     parser.add_argument("--top-n", type=int, default=20, help="Buy candidates at 100%% position")
     parser.add_argument("--bottom-k", type=int, default=5, help="Sell candidates at 100%% position")
     parser.add_argument("--device", default="cuda")
@@ -258,7 +261,7 @@ def main():
     # ------------------------------------------------------------------
     # 1. Load model
     # ------------------------------------------------------------------
-    ckpt_dir_map = {"v2": CKPT_DIR, "v5": CKPT_DIR_V5, "v6": CKPT_DIR_V6}
+    ckpt_dir_map = {"v2": CKPT_DIR, "v5": CKPT_DIR_V5, "v6": CKPT_DIR_V6, "v7": CKPT_DIR_V7}
     ckpt_dir = ckpt_dir_map.get(args.ckpt_dir, CKPT_DIR_V5)
     input_dim = 22 if args.ckpt_dir == "v2" else 26
     model, hs, nl, do = load_model(args.ckpt, device, ckpt_dir, input_dim)

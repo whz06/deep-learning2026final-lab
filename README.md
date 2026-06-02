@@ -17,7 +17,7 @@ deep-learning2026final-lab/
 └── train_wang/             ← wang 同学的项目
 ```
 
-想了解项目背景和当前进展，建议先阅读 `train_li/sharedcontext/PROJECT.md` 和 `train_li/sharedcontext/TRANSFER_PLAN.md`。
+想了解li同学项目背景和当前进展，建议先阅读 `train_li/sharedcontext/PROJECT.md` 
 
 ---
 
@@ -36,7 +36,7 @@ deep-learning2026final-lab/
 
 ---
 
-## 首次使用（新成员）
+## 首次使用
 
 1. **克隆仓库**
 
@@ -62,15 +62,3 @@ deep-learning2026final-lab/
    git push
    ```
 
----
-
-## 给 LLM / AI 工具的入口提示
-
-如果你在新对话中使用 AI 工具（如 opencode、Copilot 等），告诉它：
-
-```
-请先读取 train_li/sharedcontext/PROJECT.md 了解项目结构，
-然后读取 train_li/sharedcontext/TRANSFER_PLAN.md 了解当前进度。
-```
-
-这样可以快速恢复上下文，无需每次手动解释项目背景。
