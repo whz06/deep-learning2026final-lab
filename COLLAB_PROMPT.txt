@@ -1,0 +1,11 @@
+请帮我将代码推送到团队仓库 github.com/whz06/deep-learning2026final-lab
+
+我已克隆仓库到本地。我的工作目录是 train_wu/（或 train_wang/，这是我的个人文件夹）。
+
+请先读取仓库根目录的 README.md 了解协作规则，然后读取我文件夹中的 train_wu/README.md（或 train_wang/README.md）了解两种接入方式。
+
+规则摘要：
+- 只修改自己的文件夹（train_wu/ 或 train_wang/）
+- 只 git add 自己的文件夹，不要 git add .
+- 不要改根目录的 .gitignore
+- 先 git pull 再 git push
