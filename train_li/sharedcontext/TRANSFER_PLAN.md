@@ -117,7 +117,7 @@ v5 已训练完成，结果优于 v2：
 
 ## 六、sharedcontext 文档索引
 
-移动后 `sharedcontext/` 有 13 个文件：
+移动后 `sharedcontext/` 有 14 个文件：
 
 | 文件 | 内容 |
 |------|------|
@@ -125,12 +125,14 @@ v5 已训练完成，结果优于 v2：
 | `EXPERIMENTS.md` | V1→V4 所有实验记录 |
 | `EXP_V6.md` | V6 空间注意力（Step 3/4）完整实验报告 |
 | `EXP_V7.md` | V7 T+1 标签训练 + sweep + 回测完整报告 |
-| `EXP_V8.md` | V8 特征扩展 + 行业信息 + 损失对比 + 减仓指标优化完整报告（总结失败教训） |
+| `EXP_V8.md` | V8 特征扩展 + 行业信息 + 损失对比 + 减仓指标优化完整报告 |
+| `EXP_V9.md` | V9 售卖模型 Phase 0 + Jan 效应 + fine-tune 实验 |
 | `EXP_STEP3_STEP4.md` | 时空注意力 Step 3/4 原始记录 |
 | `KEY_DECISIONS.md` | 关键设计决策 + 失败方案汇总 |
 | `PLAN_CRITIQUE.md` | 对《初步计划.md》的批判性分析（含 KNN proxy 验证结果） |
 | `SPATIAL_ATTENTION_PLAN.md` | 旧空间注意力 Phase 1-4 计划（已归档） |
 | `plan0601.md` | 新五步优化计划：Step 1-5 |
+| `DEEP_LEARNING_BOTTLENECK.md` | 特征利用率不足的困境 + 向网页 AI 提问的问题清单 |
 | `初步计划.md` | 原根目录的初步设计方案（含双阶段注意力） |
 | `作业要求.md` | 课程作业要求 |
 | `实验环境.md` | 硬件/环境配置说明 |
@@ -143,9 +145,12 @@ v5 已训练完成，结果优于 v2：
 请先读取 sharedcontext/PROJECT.md 了解项目结构与当前最优配置，
 然后读取 sharedcontext/TRANSFER_PLAN.md 了解进度历史。
 ```
+请先读取 sharedcontext/PROJECT.md 了解项目结构与当前最优配置，
+然后读取 sharedcontext/TRANSFER_PLAN.md 了解进度历史。
+```
 ```
 
-## 八、待完成任务（更新后）
+## 八、待完成任务
 
 - [x] 移动完成 → `train_li/`
 - [x] v5 训练完成 (best IC=0.1114 > v2 0.1029)
@@ -154,9 +159,11 @@ v5 已训练完成，结果优于 v2：
 - [x] 创建 `train_wu/`、`train_wang/` 脚手架
 - [x] 重写根 `README.md`
 - [x] v6/v7 实验完成（T+5→T+1，Spatial 架构，N=5 K=3 => best）
-- [x] `trade/infer.py` 修复对齐（log1p+winsor+PE/PB clip + CSI5d th=-1.0% Strategy B）
+- [x] `trade/infer.py` 修复对齐 + state-transition 逻辑 + --holdings 支持
 - [x] 推送 `COLLAB_PROMPT.txt` 到 GitHub
-- [x] v8 特征扩展 + 损失对比 + 行业策略 + 减仓指标优化全面实验（详见 EXP_V8.md，所有方向均未超 v7 baseline）
+- [x] v8 特征扩展 + 损失对比 + 行业策略 + 减仓指标优化全面实验（均未超 v7 baseline）
 - [x] 交易成本净值模型验证（全周期 Jan-May 2026, 94 天, 扣成本排名不变）
-- [x] CSI5d < -1.0% 确认为最优减仓指标（全周期 + 扣成本验证通过）
-- [ ] 通知 wu 和 wang 克隆仓库并放入自己的代码
+- [x] CSI5d < -1.0% 确认为最优减仓指标
+- [x] v9 Phase 0 售卖模型可行性（regime-conditional vol → 证伪）+ Jan 效应分析 + fine-tune 测试
+- [x] infer.py 状态转换矩阵（5/6只 × 抑制/正常, sell from holdings）
+- [ ] notify wu and wang to clone repo and add their own code

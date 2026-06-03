@@ -31,6 +31,11 @@ train_li/
 │   ├── models/
 │   ├── checkpoints/
 │   └── results/
+├── v9/                        # Sell model feasibility (Phase 0) + Jan effect + fine-tuning test
+│   ├── phase0_feasibility.py  # λ sweep: regime-conditional vol for sell decisions
+│   ├── analyze_jan_effect.py  # Jan 2026 alpha decomposition + regime switch diagnosis
+│   ├── eval_finetune.py       # Fine-tune v7 on 2025, test IC on 2026
+│   └── checkpoints/
 ├── trade/                     # Competition daily inference
 ├── sharedcontext/              # Project documentation (this folder)
 └── .gitignore
