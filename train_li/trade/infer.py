@@ -248,8 +248,11 @@ def main():
                         help="Checkpoint filename")
     parser.add_argument("--ckpt-dir", type=str, default="v7",
                         help="Checkpoint directory: v2, v5, v6, or v7")
-    parser.add_argument("--top-n", type=int, default=20, help="Buy candidates at 100%% position")
-    parser.add_argument("--bottom-k", type=int, default=5, help="Sell candidates at 100%% position")
+    parser.add_argument("--top-n", type=int, default=6, help="Holdings count at full position (normal regime)")
+    parser.add_argument("--bottom-k", type=int, default=3, help="Rotation count (sell K, buy K)")
+    parser.add_argument("--risk-off-n", type=int, default=5, help="Holdings count during risk-off (85%% pos ≈ 5×17%%)")
+    parser.add_argument("--holdings", type=str, default="",
+                        help="Comma-separated current holdings (ts_code). Sell list computed from these.")
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--dry-run", action="store_true", help="Print decision only, don't write files")
     parser.add_argument("--no-strategy", action="store_true", help="Disable Strategy B, always full position")
@@ -306,13 +309,58 @@ def main():
     else:
         position, triggered, reason = decide_position(csi5d)
 
-    buy_n = max(1, int(np.ceil(args.top_n * position)))
-    sell_k = max(1, int(np.floor(args.bottom_k * position)))
+    # ------------------------------------------------------------------
+    # 4. Determine buy/sell counts (state-transition model)
+    # ------------------------------------------------------------------
+    print(f"\n  CSI5d: {csi5d:+.2f}%  |  阈值: {STRATEGY_B_THRESHOLD:+.1f}%  |  {'RISK-OFF' if triggered else '正常'}")
 
-    print(f"\n{'='*55}")
-    print(f"  STRATEGY B: {reason}")
-    print(f"  Position: {position*100:.0f}%  →  buy_n={buy_n}/{args.top_n}  sell_k={sell_k}/{args.bottom_k}")
-    print(f"{'='*55}")
+    FULL_N = args.top_n          # 6 stocks = normal full position
+    RISK_N = args.risk_off_n     # 5 stocks = risk-off (85% position)
+    K = args.bottom_k            # 3 turnover per day
+    POS_DESC = {FULL_N: "满仓 (6只)", RISK_N: "抑制 (5只/85%)"}
+
+    # Parse holdings (may be empty on first day)
+    hold_codes = [c.strip() for c in args.holdings.split(",") if c.strip()] if args.holdings else []
+
+    if hold_codes:
+        hold_n = len(hold_codes)
+        was_full = (hold_n == FULL_N)
+        was_risk = (hold_n == RISK_N)
+
+        if triggered:
+            # Risk-off today
+            target_n = RISK_N
+            # Sell: K rotation + 1 extra if shrinking from full → risk
+            sell_n = K + (1 if was_full else 0)
+        else:
+            # Normal today
+            target_n = FULL_N
+            # Sell: K rotation (no extra, even if was risk → we expand naturally by buying more)
+            sell_n = K
+
+        sell_n = min(sell_n, hold_n)  # can't sell more than held
+        kept_n = hold_n - sell_n
+        buy_n = max(0, target_n - kept_n)
+
+        print(f"\n  {'─'*55}")
+        print(f"  前一天: {POS_DESC.get(hold_n, f'{hold_n}只')}")
+        print(f"  今天:   {POS_DESC.get(target_n, f'{target_n}只')}  ({'RISK-OFF' if triggered else '正常'})")
+        print(f"  卖:     {sell_n}只 (轮换{K} + 收缩{sell_n - K})" if sell_n > K else f"  卖:     {sell_n}只 (轮换)")
+        print(f"  留:     {kept_n}只")
+        print(f"  买:     {buy_n}只 → 最终 {kept_n + buy_n}只")
+        print(f"  {'─'*55}")
+    else:
+        # No holdings → first day: just buy target_n
+        hold_n = 0
+        was_full = False
+        was_risk = False
+        target_n = RISK_N if triggered else FULL_N
+        sell_n = 0
+        kept_n = 0
+        buy_n = target_n
+        print(f"\n  {'─'*55}")
+        print(f"  首日建仓 → 买 {buy_n}只")
+        print(f"  {'─'*55}")
 
     # ------------------------------------------------------------------
     # 5. Feature computation (v5: fixed 2-stage normalization, 26 dims)
@@ -423,26 +471,60 @@ def main():
         all_scores = model(batch_tensor).cpu().numpy()
 
     idx_sorted = np.argsort(all_scores)[::-1]
-    top_idx = idx_sorted[:buy_n]
-    bot_idx = idx_sorted[-sell_k:]
+
+    # Sell list: from holdings if provided, else bottom sell_n from all stocks
+    if hold_codes:
+        hold_scores = []
+        for code in hold_codes:
+            if code in batch_code:
+                i = batch_code.index(code)
+                hold_scores.append((code, all_scores[i]))
+        if hold_scores:
+            hold_scores.sort(key=lambda x: x[1])  # ascending: worst first
+            sell_list = [c for c, _ in hold_scores[:sell_n]]
+        else:
+            print(f"[infer] WARNING: none of --holdings found in inference batch")
+            sell_list = []
+        print(f"\n  HOLDINGS ({len(hold_codes)}): {', '.join(hold_codes)}")
+        print(f"  SCORES (worst→best): {', '.join(f'{c}={s:+.4f}' for c, s in hold_scores)}")
+    else:
+        bot_idx = idx_sorted[-sell_n:]
+        sell_list = [batch_code[i] for i in bot_idx]
+
+    # ── Buy candidates: top buy_n from all stocks, excluding kept holdings ──
+    kept_codes = set(hold_codes) - set(sell_list) if hold_codes else set()
+    buy_list = []
+    for i in idx_sorted:
+        code = batch_code[i]
+        if code not in kept_codes:
+            buy_list.append(code)
+            if len(buy_list) >= buy_n:
+                break
 
     # ------------------------------------------------------------------
     # 7. Output
     # ------------------------------------------------------------------
     print(f"\n  BUY  (top {buy_n} stocks for next trading day):")
-    for i in top_idx:
-        print(f"    {batch_code[i]:12s}  score={all_scores[i]:+.4f}")
-    print(f"\n  SELL (bottom {sell_k} stocks):")
-    for i in bot_idx:
-        print(f"    {batch_code[i]:12s}  score={all_scores[i]:+.4f}")
+    for code in buy_list:
+        si = batch_code.index(code)
+        print(f"    {code:12s}  score={all_scores[si]:+.4f}")
+    print(f"\n  SELL ({len(sell_list)} stocks):")
+    for code in sell_list:
+        si = batch_code.index(code)
+        print(f"    {code:12s}  score={all_scores[si]:+.4f}")
+    if kept_codes:
+        print(f"\n  KEEP ({len(kept_codes)} stocks):")
+        for code in sorted(kept_codes):
+            si = batch_code.index(code)
+            print(f"    {code:12s}  score={all_scores[si]:+.4f}")
 
     if args.dry_run:
         print("\n  [dry-run] Files NOT written.")
     else:
         with open(BUY_PATH, "w") as f:
-            f.write("\n".join(batch_code[i] for i in top_idx))
+            f.write("\n".join(buy_list))
         with open(SELL_PATH, "w") as f:
-            f.write("\n".join(batch_code[i] for i in bot_idx))
+            f.write("\n".join(sell_list))
         print(f"\n  Saved: {os.path.relpath(BUY_PATH, ROOT)}")
         print(f"  Saved: {os.path.relpath(SELL_PATH, ROOT)}")
 
@@ -453,7 +535,7 @@ def main():
     with open(LOG_PATH, "a") as f:
         if not log_exists:
             f.write(f"{'date':<10} {'pos':>6} {'csi5d':>8} {'trigger':>8} {'buy_n':>5} {'sell_k':>6}\n")
-        f.write(f"{latest_date:<10} {position:>5.0%} {csi5d:>+7.2f}% {'YES' if triggered else 'no':>8} {buy_n:>5} {sell_k:>6}\n")
+        f.write(f"{latest_date:<10} {position:>5.0%} {csi5d:>+7.2f}% {'YES' if triggered else 'no':>8} {buy_n:>5} {sell_n:>6}\n")
     print(f"  Logged:   {os.path.relpath(LOG_PATH, ROOT)}")
 
     # ------------------------------------------------------------------
@@ -464,8 +546,8 @@ def main():
     print(f"  CSI300 today: {idx_pct:+.2f}%")
     print(f"  CSI300 5d:    {csi5d:+.2f}%")
     print(f"  POSITION:     {position*100:.0f}%  {'[RISK-OFF]' if triggered else 'FULL'}")
-    print(f"  BUY:  {buy_n} stocks -> {os.path.basename(BUY_PATH)}")
-    print(f"  SELL: {sell_k} stocks -> {os.path.basename(SELL_PATH)}")
+    print(f"  BUY:  {len(buy_list)} stocks -> {os.path.basename(BUY_PATH)}")
+    print(f"  SELL: {len(sell_list)} stocks -> {os.path.basename(SELL_PATH)}")
     print(f"  {'='*55}")
 
 

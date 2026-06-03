@@ -1,0 +1,16 @@
+"""Quick inspect of v7 spatial scores parquet."""
+import pandas as pd
+df = pd.read_parquet("D:/Workspace/DL_HW/deep-learning2026final-lab/train_li/v7/results/daily_scores_spatial_t1.parquet")
+print("Shape:", df.shape)
+print("Columns:", df.columns.tolist())
+print("Date range:", df["trade_date"].min(), "->", df["trade_date"].max())
+print("Unique stocks:", df["ts_code"].nunique())
+print("Sample:")
+print(df.head(10).to_string())
+print("\nStock count per date:")
+sc = df.groupby("trade_date").size()
+print(sc.describe())
+print("\nFirst 5 dates with counts:")
+print(sc.head(10))
+print("\nScore stats:")
+print(df["score"].describe())
