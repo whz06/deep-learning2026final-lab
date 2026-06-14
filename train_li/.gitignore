@@ -11,5 +11,9 @@ trade/buy_list.txt
 trade/sell_list.txt
 trade/decision.log
 */results/*.parquet
+!v6/results/daily_scores.parquet
+!v7/results/daily_scores_gru_t1.parquet
+!v7/results/daily_scores_spatial_t1.parquet
+!v8/results/daily_scores_v8.parquet
 */results/*.csv
 *.log
