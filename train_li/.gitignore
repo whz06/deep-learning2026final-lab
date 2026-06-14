@@ -4,6 +4,7 @@ data/moneyflow/
 data/index_weight/
 processed/
 */checkpoints/*.pt
+!v7/checkpoints/*.pt
 __pycache__/
 *.pyc
 trade/buy_list.txt
