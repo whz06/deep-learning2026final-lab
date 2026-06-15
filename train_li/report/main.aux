@@ -2,114 +2,188 @@
 \providecommand\hyper@newdestlabel[2]{}
 \providecommand*\HyPL@Entry[1]{}
 \HyPL@Entry{0<</S/D>>}
-\@writefile{toc}{\contentsline {section}{\numberline {1}引言}{1}{section.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {2}问题定义与数据预处理}{2}{section.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}任务定义}{2}{subsection.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}数据来源与过滤}{2}{subsection.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}数据集划分}{2}{subsection.2.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}交易成本模型（路线A）}{2}{subsection.2.4}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces 交易成本明细}}{2}{table.caption.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {1}项目背景与问题定义}{1}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}任务背景}{1}{subsection.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.2}任务定义}{1}{subsection.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.3}数据来源与股票池过滤}{2}{subsection.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.4}预测标签构造}{2}{subsection.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.5}数据集划分}{3}{subsection.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.6}数据泄露防护}{3}{subsection.1.6}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces 数据泄露防护措施汇总}}{3}{table.caption.1}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{tab:cost_model}{{1}{2}{交易成本明细}{table.caption.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}路线A：排序预测路线的探索（V1--V9）}{3}{section.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}版本迭代总览}{3}{subsection.3.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces 路线A版本迭代总览}}{3}{table.caption.2}\protected@file@percent }
-\newlabel{tab:version_overview}{{2}{3}{路线A版本迭代总览}{table.caption.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}基线建立：GRU超参数搜索（V1）}{3}{subsection.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}特征扩展与多模型对比（V2）}{3}{subsection.3.3}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces V2多模型对比}}{4}{table.caption.3}\protected@file@percent }
-\newlabel{tab:v2_model_compare}{{3}{4}{V2多模型对比}{table.caption.3}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces V2三模型验证IC对比}}{4}{figure.caption.4}\protected@file@percent }
-\newlabel{fig:v2_model}{{1}{4}{V2三模型验证IC对比}{figure.caption.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}交易策略设计与风控（V3）}{4}{subsection.3.4}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Strategy A/B/C对比}}{5}{figure.caption.5}\protected@file@percent }
-\newlabel{fig:v3_strategy}{{2}{5}{Strategy A/B/C对比}{figure.caption.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}多窗口集成的可行性探索（V4）}{5}{subsection.3.5}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces 不同序列长度的GRU模型IC对比}}{6}{table.caption.6}\protected@file@percent }
-\newlabel{tab:v4_windows}{{4}{6}{不同序列长度的GRU模型IC对比}{table.caption.6}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces KNN Proxy K-$\alpha $ IC增益热力图}}{6}{figure.caption.7}\protected@file@percent }
-\newlabel{fig:v4_knn}{{3}{6}{KNN Proxy K-$\alpha $ IC增益热力图}{figure.caption.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}预处理体系重构（V5）}{6}{subsection.3.6}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces V5预处理修复效果}}{7}{table.caption.8}\protected@file@percent }
-\newlabel{tab:v5_improvement}{{5}{7}{V5预处理修复效果}{table.caption.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.7}空间注意力机制的设计与修正（V6）}{7}{subsection.3.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.7.1}V1失败版：缺失bottleneck设计}{7}{subsubsection.3.7.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces V6 V1空间注意力失败诊断}}{8}{table.caption.9}\protected@file@percent }
-\newlabel{tab:v6_v1_diagnosis}{{6}{8}{V6 V1空间注意力失败诊断}{table.caption.9}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.7.2}V2修正版：成功的关键}{8}{subsubsection.3.7.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces V6 V2空间注意力融合方式对比}}{8}{table.caption.10}\protected@file@percent }
-\newlabel{tab:v6_fusion}{{7}{8}{V6 V2空间注意力融合方式对比}{table.caption.10}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces 空间注意力K值扫描}}{8}{table.caption.11}\protected@file@percent }
-\newlabel{tab:v6_k_sweep}{{8}{8}{空间注意力K值扫描}{table.caption.11}{}}
-\newlabel{fig:v6_spatial}{{4a}{9}{V1$\to $V2修正效果}{figure.caption.12}{}}
-\newlabel{sub@fig:v6_spatial}{{a}{9}{V1$\to $V2修正效果}{figure.caption.12}{}}
-\newlabel{fig:v6_k}{{4b}{9}{K值扫描}{figure.caption.12}{}}
-\newlabel{sub@fig:v6_k}{{b}{9}{K值扫描}{figure.caption.12}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces 空间注意力机制的设计迭代}}{9}{figure.caption.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.8}标签修正与最优模型确立（V7）}{9}{subsection.3.8}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces V7 T+1标签重训结果}}{9}{table.caption.13}\protected@file@percent }
-\newlabel{tab:v7_retrain}{{9}{9}{V7 T+1标签重训结果}{table.caption.13}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces V7 Spatial N$\times $K扫参热力图}}{10}{figure.caption.14}\protected@file@percent }
-\newlabel{fig:v7_nk}{{5}{10}{V7 Spatial N$\times $K扫参热力图}{figure.caption.14}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.9}失败的扩展尝试（V8--V9）}{10}{subsection.3.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.9.1}V8：特征扩展与行业信息注入}{10}{subsubsection.3.9.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces V8失败根因分析}}{11}{table.caption.15}\protected@file@percent }
-\newlabel{tab:v8_failure}{{10}{11}{V8失败根因分析}{table.caption.15}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces V8损失函数对比}}{11}{table.caption.16}\protected@file@percent }
-\newlabel{tab:v8_loss}{{11}{11}{V8损失函数对比}{table.caption.16}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.9.2}V9：售卖模型与微调}{12}{subsubsection.3.9.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces V9 售卖模型与效应分析}}{12}{figure.caption.17}\protected@file@percent }
-\newlabel{fig:v9}{{6}{12}{V9 售卖模型与效应分析}{figure.caption.17}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.10}统一回测与收益分析}{12}{subsection.3.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.10.1}统一回测结果}{12}{subsubsection.3.10.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces 统一回测结果（含成本，2026-01-05至05-29）}}{13}{table.caption.18}\protected@file@percent }
-\newlabel{tab:unified_backtest}{{12}{13}{统一回测结果（含成本，2026-01-05至05-29）}{table.caption.18}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.10.2}月度收益与信号质量分解}{13}{subsubsection.3.10.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces 月度Rank IC分解（统一测试期）}}{13}{table.caption.19}\protected@file@percent }
-\newlabel{tab:monthly_ic}{{13}{13}{月度Rank IC分解（统一测试期）}{table.caption.19}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {14}{\ignorespaces CSI300月度收益与模型IC对比}}{13}{table.caption.20}\protected@file@percent }
-\newlabel{tab:csi300_monthly}{{14}{13}{CSI300月度收益与模型IC对比}{table.caption.20}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {15}{\ignorespaces 模型预测能力与市场环境的关系}}{14}{table.caption.21}\protected@file@percent }
-\newlabel{tab:model_vs_market}{{15}{14}{模型预测能力与市场环境的关系}{table.caption.21}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.11}版本迭代核心经验}{14}{subsection.3.11}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces 各版本验证IC演化}}{14}{figure.caption.23}\protected@file@percent }
-\newlabel{fig:version_ic}{{7}{14}{各版本验证IC演化}{figure.caption.23}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {16}{\ignorespaces 重要失败尝试与教训}}{15}{table.caption.22}\protected@file@percent }
-\newlabel{tab:failures}{{16}{15}{重要失败尝试与教训}{table.caption.22}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}路线B：价格预测路线的探索}{15}{section.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}技术路线概述}{15}{subsection.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}模型架构：CNN-LSTM}{15}{subsection.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}归一化方案的对比研究}{15}{subsection.4.3}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {17}{\ignorespaces CNN-LSTM架构参数}}{16}{table.caption.24}\protected@file@percent }
-\newlabel{tab:wu_arch}{{17}{16}{CNN-LSTM架构参数}{table.caption.24}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.1}方案一：因果累积Max-Min归一化（有效）}{16}{subsubsection.4.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.2}方案二：全局Sigmoid归一化（系统性失效）}{16}{subsubsection.4.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}训练策略：从单年到多年度混合训练}{16}{subsection.4.4}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {18}{\ignorespaces Sigmoid归一化失效分析}}{17}{table.caption.25}\protected@file@percent }
-\newlabel{tab:sigmoid_failure}{{18}{17}{Sigmoid归一化失效分析}{table.caption.25}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {19}{\ignorespaces 归一化方案对模型性能的影响}}{17}{table.caption.26}\protected@file@percent }
-\newlabel{tab:norm_compare}{{19}{17}{归一化方案对模型性能的影响}{table.caption.26}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {20}{\ignorespaces 训练数据规模对模型性能的影响}}{17}{table.caption.27}\protected@file@percent }
-\newlabel{tab:training_scale}{{20}{17}{训练数据规模对模型性能的影响}{table.caption.27}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}训练过程中的关键观察}{18}{subsection.4.5}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {21}{\ignorespaces 各配置的早停表现}}{18}{table.caption.28}\protected@file@percent }
-\newlabel{tab:early_stop}{{21}{18}{各配置的早停表现}{table.caption.28}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}两方案对比分析}{18}{section.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}方法论对比}{18}{subsection.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}架构哲学差异}{18}{subsection.5.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {22}{\ignorespaces 两方案方法论对比}}{19}{table.caption.29}\protected@file@percent }
-\newlabel{tab:method_compare}{{22}{19}{两方案方法论对比}{table.caption.29}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}归一化方案的方法论启示}{19}{subsection.5.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}失败的价值}{19}{subsection.5.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}互补性与融合方向}{20}{subsection.5.5}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {23}{\ignorespaces 两方案互补性分析}}{20}{table.caption.30}\protected@file@percent }
-\newlabel{tab:complement}{{23}{20}{两方案互补性分析}{table.caption.30}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6}总结与展望}{20}{section.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}核心经验}{20}{subsection.6.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}模型局限性}{21}{subsection.6.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}未来方向}{21}{subsection.6.3}\protected@file@percent }
-\gdef \LT@i {\LT@entry 
-    {2}{36.40802pt}\LT@entry 
-    {2}{178.23796pt}\LT@entry 
-    {2}{171.63603pt}}
-\gdef \@abspage@last{22}
+\newlabel{tab:leak_prevention}{{1}{3}{数据泄露防护措施汇总}{table.caption.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.7}交易成本模型}{3}{subsection.1.7}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces 交易成本明细}}{4}{table.caption.2}\protected@file@percent }
+\newlabel{tab:cost_model}{{2}{4}{交易成本明细}{table.caption.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.8}评测指标体系}{4}{subsection.1.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}数据预处理与特征工程}{5}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}路线A：26维多源特征融合}{5}{subsection.2.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces 路线A特征体系（26维）}}{5}{table.caption.3}\protected@file@percent }
+\newlabel{tab:routeA_features}{{3}{5}{路线A特征体系（26维）}{table.caption.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.1}两阶段归一化}{5}{subsubsection.2.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.2}预处理增强}{6}{subsubsection.2.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}路线B：1维极简特征}{6}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.1}因果累积Max-Min归一化}{6}{subsubsection.2.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.2}Sigmoid全局归一化的系统性失效}{7}{subsubsection.2.2.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces 归一化方案对模型性能的影响（CNN-LSTM L20, 3年混合训练）}}{7}{table.caption.4}\protected@file@percent }
+\newlabel{tab:sigmoid_vs_maxmin}{{4}{7}{归一化方案对模型性能的影响（CNN-LSTM L20, 3年混合训练）}{table.caption.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}两路线特征工程对比}{7}{subsection.2.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces 两路线特征工程对比}}{8}{table.caption.5}\protected@file@percent }
+\newlabel{tab:feature_compare}{{5}{8}{两路线特征工程对比}{table.caption.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}路线A：排序预测路线的探索（V1--V9）}{8}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}技术路线总览}{8}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}基线建立：GRU超参数搜索与多模型对比（V1--V2）}{8}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}V1：超参数网格搜索}{8}{subsubsection.3.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}V2：特征扩展与架构对比}{9}{subsubsection.3.2.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces V2多模型对比}}{9}{table.caption.6}\protected@file@percent }
+\newlabel{tab:v2_model_compare}{{6}{9}{V2多模型对比}{table.caption.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}交易策略设计与风控（V3）}{9}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.1}Strategy B（动量止损）的确立}{9}{subsubsection.3.3.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces V2三模型验证IC对比}}{10}{figure.caption.7}\protected@file@percent }
+\newlabel{fig:v2_model}{{1}{10}{V2三模型验证IC对比}{figure.caption.7}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.2}失败方案的诊断价值}{10}{subsubsection.3.3.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Strategy A/B/C对比}}{11}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:v3_strategy}{{2}{11}{Strategy A/B/C对比}{figure.caption.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}多窗口集成的可行性探索（V4）}{11}{subsection.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.1}窗口对比实验}{11}{subsubsection.3.4.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces 不同序列长度的GRU模型IC对比}}{11}{table.caption.9}\protected@file@percent }
+\newlabel{tab:v4_windows}{{7}{11}{不同序列长度的GRU模型IC对比}{table.caption.9}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.2}放弃多窗口方向的三条理由}{12}{subsubsection.3.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.3}意外的副产品——KNN Proxy验证空间注意力}{12}{subsubsection.3.4.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces KNN Proxy K-$\alpha $ IC增益热力图}}{12}{figure.caption.10}\protected@file@percent }
+\newlabel{fig:v4_knn}{{3}{12}{KNN Proxy K-$\alpha $ IC增益热力图}{figure.caption.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}预处理体系重构：最大的单次突破（V5）}{13}{subsection.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.1}缺陷根因：截面特征全部失效}{13}{subsubsection.3.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.2}两阶段归一化}{13}{subsubsection.3.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.3}伴随改进与效果}{13}{subsubsection.3.5.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces V5预处理修复效果}}{14}{table.caption.11}\protected@file@percent }
+\newlabel{tab:v5_improvement}{{8}{14}{V5预处理修复效果}{table.caption.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}空间注意力机制的设计与修正（V6）}{14}{subsection.3.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.6.1}V1失败版：缺失瓶颈设计}{14}{subsubsection.3.6.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces V6 V1空间注意力失败诊断}}{14}{table.caption.12}\protected@file@percent }
+\newlabel{tab:v6_v1_diagnosis}{{9}{14}{V6 V1空间注意力失败诊断}{table.caption.12}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.6.2}V2修正版：成功的关键}{15}{subsubsection.3.6.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces V6 V2空间注意力融合方式对比}}{15}{table.caption.13}\protected@file@percent }
+\newlabel{tab:v6_fusion}{{10}{15}{V6 V2空间注意力融合方式对比}{table.caption.13}{}}
+\newlabel{fig:v6_spatial}{{4a}{15}{V1$\to $V2修正效果}{figure.caption.14}{}}
+\newlabel{sub@fig:v6_spatial}{{a}{15}{V1$\to $V2修正效果}{figure.caption.14}{}}
+\newlabel{fig:v6_k}{{4b}{15}{K值扫描}{figure.caption.14}{}}
+\newlabel{sub@fig:v6_k}{{b}{15}{K值扫描}{figure.caption.14}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces 空间注意力机制的设计迭代}}{15}{figure.caption.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7}标签修正与最优模型确立（V7）}{15}{subsection.3.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.7.1}T+5标签的虚假繁荣}{15}{subsubsection.3.7.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces V6模型在测试期的预测能力——标签错配}}{16}{table.caption.15}\protected@file@percent }
+\newlabel{tab:v6_label_mismatch}{{11}{16}{V6模型在测试期的预测能力——标签错配}{table.caption.15}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.7.2}重训结果与空间注意力的放大器效应}{16}{subsubsection.3.7.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces V7 T+1标签重训结果}}{16}{table.caption.16}\protected@file@percent }
+\newlabel{tab:v7_retrain}{{12}{16}{V7 T+1标签重训结果}{table.caption.16}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.7.3}N-K参数扫描}{16}{subsubsection.3.7.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces V7 Spatial N$\times $K扫参热力图}}{17}{figure.caption.17}\protected@file@percent }
+\newlabel{fig:v7_nk}{{5}{17}{V7 Spatial N$\times $K扫参热力图}{figure.caption.17}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.8}失败的扩展尝试（V8--V9）}{17}{subsection.3.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.8.1}V8：特征扩展与行业信息注入}{17}{subsubsection.3.8.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.8.2}V9：售卖模型与微调}{18}{subsubsection.3.8.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces V9 $\lambda $扫描——任何$\lambda >0$均不高于基线}}{19}{figure.caption.18}\protected@file@percent }
+\newlabel{fig:v9_lambda}{{6}{19}{V9 $\lambda $扫描——任何$\lambda >0$均不高于基线}{figure.caption.18}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces V9 效应诊断}}{19}{figure.caption.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.9}版本迭代总结}{20}{subsection.3.9}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces 路线A版本迭代总览}}{20}{table.caption.20}\protected@file@percent }
+\newlabel{tab:version_overview}{{13}{20}{路线A版本迭代总览}{table.caption.20}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.10}统一回测与信号质量分析}{20}{subsection.3.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.10.1}信号质量对比}{20}{subsubsection.3.10.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {14}{\ignorespaces 路线A信号质量汇总（统一测试期，94天）}}{20}{table.caption.21}\protected@file@percent }
+\newlabel{tab:routeA_ic_summary}{{14}{20}{路线A信号质量汇总（统一测试期，94天）}{table.caption.21}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.10.2}日度IC时序分析}{21}{subsubsection.3.10.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces 日度Rank IC时序（10日滚动均线）}}{21}{figure.caption.22}\protected@file@percent }
+\newlabel{fig:daily_ic}{{8}{21}{日度Rank IC时序（10日滚动均线）}{figure.caption.22}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.10.3}月度IC稳定性}{21}{subsubsection.3.10.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces 月度Rank IC分布箱线图}}{21}{figure.caption.23}\protected@file@percent }
+\newlabel{fig:monthly_ic_box}{{9}{21}{月度Rank IC分布箱线图}{figure.caption.23}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.11}版本迭代核心经验}{22}{subsection.3.11}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {15}{\ignorespaces 重要失败尝试与教训}}{22}{table.caption.24}\protected@file@percent }
+\newlabel{tab:failures}{{15}{22}{重要失败尝试与教训}{table.caption.24}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}路线B：价格预测路线的探索（Wu）}{23}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}技术路线总览}{23}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}模型架构：CNN-LSTM}{23}{subsection.4.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {16}{\ignorespaces CNN-LSTM架构参数}}{23}{table.caption.25}\protected@file@percent }
+\newlabel{tab:wu_arch}{{16}{23}{CNN-LSTM架构参数}{table.caption.25}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}归一化方案的系统性对比}{24}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.1}方案一：因果累积Max-Min归一化}{24}{subsubsection.4.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.2}方案二：全局Sigmoid归一化的系统性失效}{24}{subsubsection.4.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}训练策略的三阶段探索}{24}{subsection.4.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Sigmoid函数与A股价格分布的重叠——93.38\%的股票落在梯度近零区}}{25}{figure.caption.26}\protected@file@percent }
+\newlabel{fig:wu_sigmoid}{{10}{25}{Sigmoid函数与A股价格分布的重叠——93.38\%的股票落在梯度近零区}{figure.caption.26}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {17}{\ignorespaces 归一化方案对模型性能的影响（CNN-LSTM L20, 3年混合训练）}}{25}{table.caption.27}\protected@file@percent }
+\newlabel{tab:wu_norm_compare}{{17}{25}{归一化方案对模型性能的影响（CNN-LSTM L20, 3年混合训练）}{table.caption.27}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.1}阶段一：全量数据训练（2016--2026）→ 过早收敛}{25}{subsubsection.4.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.2}阶段二：单年训练 → 严重过参数化}{25}{subsubsection.4.4.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {18}{\ignorespaces 单年训练的问题信号}}{25}{table.caption.28}\protected@file@percent }
+\newlabel{tab:wu_single_year}{{18}{25}{单年训练的问题信号}{table.caption.28}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.3}阶段三：3年混合训练 → 最终方案}{26}{subsubsection.4.4.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {19}{\ignorespaces 单年 vs 3年混合训练对比}}{26}{table.caption.29}\protected@file@percent }
+\newlabel{tab:wu_training_compare}{{19}{26}{单年 vs 3年混合训练对比}{table.caption.29}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces 3年混合训练——损失快速收敛（2 epoch早停），测试IC全程为正}}{26}{figure.caption.30}\protected@file@percent }
+\newlabel{fig:wu_loss_3year}{{11}{26}{3年混合训练——损失快速收敛（2 epoch早停），测试IC全程为正}{figure.caption.30}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}模型对比与序列长度分析}{27}{subsection.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.5.1}CNN-LSTM vs 纯LSTM}{27}{subsubsection.4.5.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {20}{\ignorespaces CNN-LSTM vs 纯LSTM（maxmin归一化）}}{27}{table.caption.31}\protected@file@percent }
+\newlabel{tab:wu_arch_compare}{{20}{27}{CNN-LSTM vs 纯LSTM（maxmin归一化）}{table.caption.31}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.5.2}序列长度：L20 vs L60}{27}{subsubsection.4.5.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {21}{\ignorespaces L20 vs L60 对比（CNN-LSTM, 3年混合）}}{27}{table.caption.32}\protected@file@percent }
+\newlabel{tab:wu_seqlen}{{21}{27}{L20 vs L60 对比（CNN-LSTM, 3年混合）}{table.caption.32}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}N-K参数分析：K无影响的独特发现}{28}{subsection.4.6}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {22}{\ignorespaces 不同N值下的日间持仓重合度}}{28}{table.caption.33}\protected@file@percent }
+\newlabel{tab:wu_overlap}{{22}{28}{不同N值下的日间持仓重合度}{table.caption.33}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.7}统一回测结果}{28}{subsection.4.7}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {23}{\ignorespaces 路线B统一回测结果（N=5, K=3, 含成本, Strategy B）}}{28}{table.caption.34}\protected@file@percent }
+\newlabel{tab:wu_unified_backtest}{{23}{28}{路线B统一回测结果（N=5, K=3, 含成本, Strategy B）}{table.caption.34}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.8}路线B的核心经验}{29}{subsection.4.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}统一评测对比}{29}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}统一评测框架}{29}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}路线A内部模型对比}{29}{subsection.5.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {24}{\ignorespaces 统一评测框架参数}}{30}{table.caption.35}\protected@file@percent }
+\newlabel{tab:unified_framework}{{24}{30}{统一评测框架参数}{table.caption.35}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.1}信号质量对比}{30}{subsubsection.5.2.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {25}{\ignorespaces 路线A信号质量汇总（统一测试期，94天）}}{30}{table.caption.36}\protected@file@percent }
+\newlabel{tab:ch5_ic_summary}{{25}{30}{路线A信号质量汇总（统一测试期，94天）}{table.caption.36}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.2}月度IC稳定性}{30}{subsubsection.5.2.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces 路线A日度Rank IC时序（10日滚动均线叠加）}}{31}{figure.caption.37}\protected@file@percent }
+\newlabel{fig:ch5_daily_ic}{{12}{31}{路线A日度Rank IC时序（10日滚动均线叠加）}{figure.caption.37}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces 月度Rank IC分布箱线图}}{31}{figure.caption.38}\protected@file@percent }
+\newlabel{fig:ch5_monthly_ic}{{13}{31}{月度Rank IC分布箱线图}{figure.caption.38}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.3}IC分布对比}{32}{subsubsection.5.2.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces Rank IC分布直方图叠加}}{32}{figure.caption.39}\protected@file@percent }
+\newlabel{fig:ch5_ic_hist}{{14}{32}{Rank IC分布直方图叠加}{figure.caption.39}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.4}累计收益曲线}{32}{subsubsection.5.2.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces 统一回测累计收益曲线（含CSI300基准）}}{32}{figure.caption.40}\protected@file@percent }
+\newlabel{fig:ch5_equity}{{15}{32}{统一回测累计收益曲线（含CSI300基准）}{figure.caption.40}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}路线A vs 路线B：方法论维度对比}{33}{subsection.5.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {26}{\ignorespaces 两方案方法论对比}}{33}{table.caption.41}\protected@file@percent }
+\newlabel{tab:ch5_method_compare}{{26}{33}{两方案方法论对比}{table.caption.41}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.1}“1维 vs 26维”的悖论}{33}{subsubsection.5.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.2}特征哲学与架构哲学}{34}{subsubsection.5.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}关键指标对比}{34}{subsection.5.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces 四模型关键指标对比（统一回测框架，N=5 K=3）}}{35}{figure.caption.42}\protected@file@percent }
+\newlabel{fig:ch5_bars}{{16}{35}{四模型关键指标对比（统一回测框架，N=5 K=3）}{figure.caption.42}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}两条路线的互补性与融合方向}{35}{subsection.5.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}本章小结}{35}{subsection.5.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}模拟交易竞赛（2026年6月1日--12日）}{36}{section.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}竞赛规则与操作流程}{36}{subsection.6.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {27}{\ignorespaces 竞赛期交易决策日志}}{37}{table.caption.43}\protected@file@percent }
+\newlabel{tab:competition_log}{{27}{37}{竞赛期交易决策日志}{table.caption.43}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}竞赛期交易日志}{37}{subsection.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}竞赛期收益分析}{37}{subsection.6.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {17}{\ignorespaces 竞赛期日度收益与累计收益（V7 Spatial, N=5, K=3, Strategy B）}}{38}{figure.caption.44}\protected@file@percent }
+\newlabel{fig:competition}{{17}{38}{竞赛期日度收益与累计收益（V7 Spatial, N=5, K=3, Strategy B）}{figure.caption.44}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}竞赛反思与经验总结}{38}{subsection.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}总结与反思}{39}{section.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}我学到了什么}{39}{subsection.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.1.1}数据比模型重要得多}{39}{subsubsection.7.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.1.2}诚实的标签比好看的分数重要}{39}{subsubsection.7.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.1.3}失败的次数远多于成功，但每次失败都值钱}{40}{subsubsection.7.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.1.4}工程细节的累积效应}{40}{subsubsection.7.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}模型的局限性}{40}{subsection.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}如果还有时间，我会尝试什么}{41}{subsection.7.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}最后}{41}{subsection.7.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {28}{\ignorespaces 组员分工}}{42}{table.caption.46}\protected@file@percent }
+\gdef \@abspage@last{42}
