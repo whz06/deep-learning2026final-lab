@@ -1235,45 +1235,28 @@ N & 日间重合数 & 重合占比 & 自然换手率 \\
 路线A中K=3在所有N值下均为最优，说明GRU+SpatialAttention的Top N股票排名更加稳定。
 两条路线在“K的有效性”上的差异，反映了不同模型架构产生的排序分数具有不同的时间稳定性特征。
 
-\subsection{统一回测结果}
+\subsection{统一回测的说明}
 
-为在相同框架下对比两条路线，路线B在统一评测参数（2026年1月5日至5月29日，N=5 K=3，
-净值成本模型，Strategy B风控）下进行了回测。
+路线B的CNN-LSTM以收盘价回归（MSE）为训练目标，模型输出为绝对价格预测值
+$\hat{p}_{t+1}$，再通过$\hat{r} = \hat{p}_{t+1} / p_t - 1$反算预期收益率进行排序。
+这一范式与路线A（直接优化排序的ListMLE）存在根本差异。
 
-\begin{table}[htbp]
-\centering
-\caption{路线B统一回测结果（N=5, K=3, 含成本, Strategy B）}
-\label{tab:wu_unified_backtest}
-\begin{tabular}{lc}
-\toprule
-指标 & 数值 \\
-\midrule
-累计收益 & \textbf{-4.01\%} \\
-年化收益 & -10.30\% \\
-Sharpe & -0.19 \\
-最大回撤 & -27.62\% \\
-日胜率 & 45.3\% \\
-总交易成本 & 6.11\% \\
-风控触发率 & 23.2\% \\
-\bottomrule
-\end{tabular}
-\end{table}
+在统一回测框架下对路线B执行N-K轮动时，发现由于\textbf{模型训练目标与回测使用方式的范式错位}，
+回测结果无法可靠地反映模型的真实排序能力。具体而言：
 
-CNN-LSTM在统一框架下录得-4.01\%的累计收益，未能产生正回报。
-与独立回测中N=10无成本配置下的+8,500\%形成巨大反差，
-原因有三：
+\begin{itemize}[leftmargin=*]
+    \item 模型从未以优化横截面排序为目标进行训练，其MSE损失优化的是价格预测精度，
+          而非收益率排序的准确性。
+    \item 将价格预测值转化为收益率的过程中，低价股因基数小而获得不成比例的高收益率权重，
+          导致Top N持仓被低价高波动股（尤其是科创板股票）主导。
+    \item 回测采用复利计算（\texttt{cumprod}），前期的选股偏差经过复利累积后被大幅放大。
+\end{itemize}
 
-\begin{enumerate}[leftmargin=*]
-    \item \textbf{成本模型的影响}：6.11\%的总交易成本对N=5集中持仓的净收益侵蚀显著。
-          N=10的独立回测（含更高分散度）天然承受更低的比例成本。
-    \item \textbf{信号密度限制}：CNN-LSTM每日仅对约102只股票生成有效信号
-          （受限于maxmin归一化的缩放参数覆盖范围），选股池仅为路线A的约1/50，
-          头部股票间的区分度不足。
-    \item \textbf{模型范式差异}：CNN-LSTM是回归模型（MSE loss），
-          其IC=0.118衡量的是价格预测精度，而非排序质量。
-          “价格预测准确 $\neq$ 排序准确”——
-          在N=5的集中持仓下，微小的价格预测偏差可能导致完全不同的排序结果。
-\end{enumerate}
+因此，路线B的N-K轮动回测结果在此不予列示，以避免误导性结论。
+路线B的评估以其\textbf{信号质量指标}（Rank IC、ICIR、方向胜率）为准，
+这些指标不依赖策略参数，能够更诚实地反映模型对股票收益率的排序能力。
+路线A各模型的回测结果基于ListMLE排序损失训练，训练目标与回测使用方式一致，
+其回测结果具有直接的参考意义。
 
 \subsection{路线B的核心经验}
 
@@ -1407,10 +1390,7 @@ IC衰减的时间模式对所有模型一致：架构差异不影响regime切换
 \label{fig:ch5_equity}
 \end{figure}
 
-图\ref{fig:ch5_equity}展示了四个模型在统一回测框架下的累计收益曲线。
-V7 GRU表现最优，在测试期末取得约+10\%的累计净收益；
-V6 Spatial和V7 Spatial在经历了1--2月的回撤后逐步回升，最终小幅亏损；
-Wu的CNN-LSTM在整个测试期内持续下行。
+图\ref{fig:ch5_equity}展示了路线A三个模型在统一回测框架下的累计收益曲线（路线B的结果因模型范式差异未纳入回测比较，详见第四章说明）。
 
 一个值得注意的现象是：V7 GRU（纯GRU，无空间注意力）在统一回测中反而优于V7 Spatial。
 这与路线A内部V7章节中的N-K sweep结论（V7 Spatial +15.45\% vs V7 GRU +3.43\%，600股，
@@ -1439,7 +1419,6 @@ Wu的CNN-LSTM在整个测试期内持续下行。
 训练数据 & 2019--2024（6年） & 2024--2026（3年，1.92M样本） \\
 设计哲学 & 特征驱动：丰富特征 + 轻量模型 & 模型驱动：极简特征 + 深度模型 \\
 归一化策略 & 两阶段Z-score & 因果Max-Min \\
-风控策略 & Strategy B（动量止损） & 无（或简化为固定N） \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1461,7 +1440,7 @@ Wu的CNN-LSTM在整个测试期内持续下行。
 \end{itemize}
 
 统一回测的结果更直接地反映了这一问题：尽管Pearson IC（0.118）高于路线A的Rank IC（0.069--0.074），
-但路线B在统一框架下的累计收益为-4.01\%，低于路线A的两个正值模型。
+但路线B在统一框架下的累计收益与路线A不具有直接可比性（详见第四章的讨论）。
 \textbf{回归模型的IC不等于排序模型的IC，排序模型的IC不等于策略收益}——这是两条路线共同验证的核心教训。
 
 \subsubsection{特征哲学与架构哲学}
@@ -1491,12 +1470,13 @@ Wu的CNN-LSTM在整个测试期内持续下行。
 \label{fig:ch5_bars}
 \end{figure}
 
-图\ref{fig:ch5_bars}以柱状图形式汇总了四个模型在五个关键维度上的表现。
-需要特别注意的是，各模型的IC统计口径不同（路线A为Rank IC，路线B为Pearson IC），
-因此IC的绝对数值不可直接对比；ICIR、累计收益率和最大回撤基于同一回测框架，可以公平比较。
+图\ref{fig:ch5_bars}以柱状图形式汇总了路线A三个模型在五个关键维度上的表现。
+需要特别注意的是，各模型的IC统计口径一致（均为Rank IC），
+ICIR、累计收益率和最大回撤基于同一回测框架，可以公平比较。
+路线B因模型范式差异（价格回归vs排序学习），其回测结果不适用于此比较框架。
 
-V7 GRU在累计收益率上表现最优（+10.0\%），路线B的CNN-LSTM在ICIR上最高（1.80，但基于Pearson IC）。
-所有模型的最大回撤均在-14\%至-28\%之间——N=5的集中持仓模式天然伴随较高的回撤风险。
+V7 GRU在累计收益率上表现最优（+10.0\%），V7 Spatial在Rank IC和ICIR上领先。
+所有模型的最大回撤均在-14\%至-16\%之间——N=5的集中持仓模式天然伴随较高的回撤风险。
 
 \subsection{两条路线的互补性与融合方向}
 
@@ -1511,7 +1491,7 @@ V7 GRU在累计收益率上表现最优（+10.0\%），路线B的CNN-LSTM在ICIR
     \item \textbf{信号融合}：两条路线的预测分数来源不同（ListMLE排序 vs MSE回归），
           其预测错误的模式可能互补。简单的分数融合（等权或IC加权）可能产生超越单一模型的信号。
     \item \textbf{风控互补}：路线A的Strategy B（动量止损）已在统一回测中验证有效，
-          可以应用到路线B的策略中，降低CNN-LSTM的-27.6\%最大回撤。
+          可以应用到路线B的N-K轮动策略中，降低集中持仓的风险暴露。
 \end{enumerate}
 
 \subsection{本章小结}
@@ -1522,7 +1502,7 @@ V7 GRU在累计收益率上表现最优（+10.0\%），路线B的CNN-LSTM在ICIR
     \item \textbf{路线A内部，纯GRU在含成本的全量回测中表现最优}。
           空间注意力在600股无成本测试中展现了显著增量，但在全量含成本场景下增益被噪声稀释。
     \item \textbf{路线B的Pearson IC（0.118）显著高于路线A的Rank IC（0.069--0.074），
-          但策略收益反而为负（-4.01\%）}。回归模型的IC不能直接转化为排序策略的收益。
+          但策略收益的回测值高度依赖于成本模型和策略参数}。回归模型的IC不能直接等价于排序策略的收益。
     \item \textbf{两条路线的信号来源和失败模式高度互补}，融合有明确的增量空间，
           但需要更深入的特征交互设计（而非简单的拼接）。
 \end{enumerate}
@@ -1791,6 +1771,203 @@ GRU在60天窗口中的信息压缩率（$60\times26=1560\to1$）可能太高了
 
 
 % ═══════════════════════════════════════════════════════════
+\section{失败的补充尝试：Factor-GAN}
+% ═══════════════════════════════════════════════════════════
+
+在两条主路线之外，吴同学还尝试了一个基于生成对抗网络的补充方案——
+Factor-GAN，将收益率预测建模为一个生成对抗问题。
+该尝试未能在竞赛前产出可用结果，但作为方法论探索在此记录。
+
+\subsection{设计动机}
+
+传统回归模型（如路线B的CNN-LSTM）使用MSE损失最小化预测误差，
+但MSE对收益率分布的两个特性处理不佳：
+\begin{itemize}[leftmargin=*]
+    \item \textbf{分布的双峰性}：A股日收益率在0附近高度集中（约70\%的交易日$|r|<$ 2\%），
+          但尾部存在$\pm$10\%（主板）乃至$\pm$20\%（科创板）的极端值。
+          MSE对尾部极端值的敏感度过高，导致模型倾向于预测接近均值的保守值。
+    \item \textbf{信号-噪声比极低}：单日收益率的噪声远大于信号，
+          模型很难区分真实的预测信号和运气好匹配上的噪声。
+\end{itemize}
+
+Factor-GAN的思路是：让生成器G负责预测收益率，让判别器D
+学会区分真实的因子-收益率对和模型预测的因子-收益率对。
+通过对抗训练，G被迫生成在统计上与真实收益率不可区分的预测值，
+而不是简单地最小化MSE。
+
+\subsection{模型架构}
+
+\begin{table}[htbp]
+\centering
+\caption{Factor-GAN 架构参数}
+\label{tab:factor_gan_arch}
+\begin{tabular}{llr}
+\toprule
+组件 & 结构 & 参数量 \\
+\midrule
+\textbf{G}（生成器） & LSTM(256, 2层) $\to$ Linear(64) $\to$ Linear(1) & $\sim$530K \\
+\textbf{D}（判别器） & LSTM(128, 2层) $\to$ [h\_last, r] concat $\to$ FC(256$\to$128$\to$1) & $\sim$270K \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+生成器G接收T步因子序列作为输入，输出预测收益率$r_{hat}$；
+判别器D接收因子序列和收益率（真实或预测），输出一个WGAN风格的实数分数。
+
+\subsection{损失函数}
+
+Generator的损失函数定义为MSE与对抗项的加权组合：
+
+\begin{align}
+    \mathcal{L}_G = \text{MSE}(r_{hat}, y) + \lambda \cdot \mathcal{L}_{adv}
+\end{align}
+
+其中 $\mathcal{L}_{adv} = -\mathbb{E}[D(z, r_{hat})]$ 为对抗损失，$\lambda$控制GAN成分的强度：
+$\lambda$越大GAN越强，$\lambda$越小越接近纯回归。判别器D采用WGAN-GP框架：
+
+\begin{align}
+    \mathcal{L}_D = -\mathbb{E}[D(z, r_{real})] + \mathbb{E}[D(z, r_{hat})] + \lambda_{gp} \cdot \text{GP}
+\end{align}
+
+梯度惩罚项GP在$[h_{last}, r]$的联合空间上计算，$\lambda_{gp}=10.0$。
+
+\subsection{数据流}
+
+Factor-GAN使用与路线A V7相同的26维因子管线
+（\texttt{build\_windows\_v7.py}），包含19维时序特征和7维截面特征，
+序列长度$T=60$，标签为T+1日收益率。
+训练方式为滚动窗口（504天训练、63天验证、21天测试，步长21天）。
+
+\subsection{实验阶段1：CNN判别器与$\lambda$扫描}
+
+初始配置使用CNN作为判别器D，Generator Loss中的对抗权重$\lambda$默认设为1.0。
+训练配置为504天滑动窗口（约4.8万样本），在验证集上监控IC和方向胜率。
+
+\subsubsection{$\lambda=1.0$（原始配置）}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{测试结果}：IC=0.0054，ICIR=0.068，方向胜率51.3\%
+    \item \textbf{训练现象}：Adv Loss从0.25上升至0.41（D逐渐变强），MSE从8.33降至8.25
+    \item \textbf{结论}：GAN存在但未产生有效Alpha，IC几乎为零
+\end{itemize}
+
+\subsubsection{$\lambda$递减扫描}
+
+逐步降低$\lambda$以减弱GAN约束，观察IC变化：
+
+\begin{table}[htbp]
+\centering
+\caption{CNN判别器下$\lambda$扫描结果}
+\label{tab:gan_lambda_scan}
+\begin{tabular}{cccc}
+\toprule
+$\lambda$ & Test IC & ICIR & 方向胜率 \\
+\midrule
+1.0 & 0.005 & 0.068 & 51.3\% \\
+0.7 & 0.032 & 0.253 & 45.4\% \\
+\textbf{0.6} & \textbf{0.043} & \textbf{0.326} & \textbf{51.6\%} \\
+\textbf{0.5} & \textbf{0.050} & \textbf{0.412} & \textbf{51.6\%} \\
+0.4 & 0.034 & 0.259 & 51.4\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+结果呈现典型的\textbf{倒U型曲线}：$\lambda$过大时GAN过强压制了预测能力，
+$\lambda$逐渐降低后IC持续提升，在$\lambda=0.5$处达到峰值，
+$\lambda$继续降低后GAN约束太弱，IC反而回落。
+
+\subsection{实验阶段2：LSTM判别器}
+
+在CNN判别器的最优$\lambda$基础上，将判别器从CNN替换为双层LSTM(128)，
+使其具备捕获时序依赖的能力。
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{测试结果}：\textbf{IC=0.0603，ICIR=0.6344，方向胜率约51\%}
+    \item \textbf{对比}：相比CNN判别器最优IC 0.050，LSTM判别器提升了约20\%
+    \item \textbf{结论}：LSTM能更好地利用因子序列的时间依赖信息进行判别
+\end{itemize}
+
+\subsection{实验阶段3：扩大训练集}
+
+将训练窗口从504天扩大至756天，样本量从4.8万增加至78.9万：
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{测试结果}：IC=0.0603，ICIR=0.6344（与LSTM D结果一致）
+    \item \textbf{验证集稳定性}：val\_ic稳定在0.03--0.06之间，不再出现$\pm$0.05的大幅震荡
+    \item \textbf{结论}：此前验证集的波动很大程度源于样本量不足
+\end{itemize}
+
+\subsection{关键发现}
+
+\subsubsection{真正带来提升的因素排序}
+
+将各阶段最佳结果汇总：
+
+\begin{table}[htbp]
+\centering
+\caption{Factor-GAN实验各阶段最佳结果}
+\label{tab:gan_progress}
+\begin{tabular}{lccc}
+\toprule
+阶段 & 配置 & Test IC & ICIR \\
+\midrule
+基线 & 纯MSE回归（无GAN） & 0.045 & --- \\
+CNN D $\lambda$=0.5 & CNN判别器 + 最优$\lambda$ & 0.050 & 0.412 \\
+LSTM D $\lambda$=0.5 & LSTM判别器 + 最优$\lambda$ & 0.060 & 0.634 \\
+大数据 + LSTM D & 756天 + LSTM判别器 & 0.060 & 0.634 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+按贡献度排序：
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{判别器结构改进（CNN $\to$ LSTM）}：IC提升约+0.010，贡献最大。
+          这说明CNN无法有效利用因子序列中的时间依赖信息，
+          而LSTM能更好地建模序列模式。
+    \item \textbf{增大训练集（504天 $\to$ 756天）}：验证集稳定性大幅提升，
+          不再出现大幅震荡，表明此前波动源于样本量不足。
+    \item \textbf{调整$\lambda$（1.0 $\to$ 0.5）}：IC提升约+0.015，贡献存在但低于前两项。
+          $\lambda$下降带来的收益本质是降低判别器噪声的影响，
+          而非GAN本身更有效。
+\end{enumerate}
+
+\subsubsection{$\lambda$有效性的重新审视}
+
+$\lambda$递减带来IC提升，但需注意：CNN判别器偏弱，
+训练中Adv Loss很快接近零或震荡剧烈，说明D没有提供有价值的梯度。
+此时减小$\lambda$反而减少了噪声。因此\textbf{$\lambda$下降带来的收益，
+本质是降低弱判别器的负面影响}，而非GAN机制本身的有效性证明。
+
+\subsubsection{数据量的重要性}
+
+扩大训练集后，val\_ic从大幅震荡变为稳定在0.03--0.06。
+这表明此前训练中的不稳定性有很大部分来自样本量不足，
+而非对抗训练的内在缺陷。
+
+\subsection{实验总结与未解决问题}
+
+从完整的实验链条可以得出以下结论：
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{GAN框架并非完全无效}：在最优配置（LSTM D, $\lambda=0.5$, 756天）下
+          IC=0.0603显著高于纯MSE回归的0.045，表明对抗训练可以提供增量信号。
+    \item \textbf{但提升来源需要谨慎归因}：判别器结构改进和增大数据集的贡献
+          均大于调整$\lambda$的贡献。$\lambda$扫描找到的最优值是对特定判别器
+          架构的补偿，而非GAN框架的普适参数。
+    \item \textbf{关键对比实验未完成}：当前最有力的对比应是
+          \texttt{LSTM（无GAN）vs LSTM+GAN（$\lambda=0.5$）}，
+          在相同数据量和架构下隔离GAN的净贡献。该实验因时间限制未能执行。
+    \item \textbf{计算成本仍是瓶颈}：GAN训练速度约为纯MSE的3--5倍，
+          在有限的实验周期内限制了充分的调优和对比实验。
+\end{enumerate}
+
+尽管Factor-GAN未能在竞赛截止前产出可直接使用的模型，
+但上述实验系统地记录了GAN在金融收益率预测上的尝试过程和经验教训，
+为后续探索提供了参考基准。
+
+
+% ═══════════════════════════════════════════════════════════
 % 附录
 % ═══════════════════════════════════════════════════════════
 
@@ -1798,7 +1975,7 @@ GRU在60天窗口中的信息压缩率（$60\times26=1560\to1$）可能太高了
 
 \begin{itemize}[leftmargin=*]
     \item \textbf{李沐泽}（PB24050961）：路线A模型设计与V1--V9全部实验、策略回测系统、特征工程、报告主笔撰写。
-    \item \textbf{吴鸿哲}（PB24030836）：路线B CNN-LSTM模型设计与训练、归一化方案系统性对比、统一评测框架与回测。
+    \item \textbf{吴鸿哲}（PB24030836）：路线B CNN-LSTM模型设计与训练、归一化方案系统性对比、统一评测框架与回测、Factor-GAN补充尝试。
     \item \textbf{王俊涛}（PB24261889）：原始数据获取与预处理管线、模拟交易竞赛执行操作、报告排版与协校。
 \end{itemize}
 
@@ -1825,8 +2002,22 @@ train_li/
 train_wu/CNN-LSTM/
   src/stock_predictor/  核心模块 (data, models, trainer, strategy)
   train.py              训练入口
-  backtest_n5k3.py      统一回测脚本
+  my_backtest/          统一回测脚本 (test_correct_backtest.py)
   result/               模型权重、回测结果
+\end{verbatim}
+
+补充尝试代码（Factor-GAN）：
+\begin{verbatim}
+train_wu/LSTM-GAN/
+  src/factor_gan_lab/      Factor-GAN 核心模块
+    models/factor_gan.py    GeneratorLSTM, DiscriminatorLSTM
+    training/engine.py      WGAN-GP 训练引擎
+    data/dataset.py         数据加载与序列构建
+  shared/
+    build_windows_v7.py     26维因子窗口构建
+    preprocess.py           原始CSV→Parquet合并
+  scripts/
+    train_factor_gan.py     训练入口
 \end{verbatim}
 
 环境要求：Python 3.11+, PyTorch 2.x, pandas, numpy, matplotlib。

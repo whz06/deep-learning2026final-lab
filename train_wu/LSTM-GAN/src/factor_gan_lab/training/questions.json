@@ -1,0 +1,149 @@
+{
+  "verification": [
+    {
+      "question": "In the `train_one_window` function, how is the generator loss (g_loss) computed? What are its two components and how are they weighted?",
+      "answer_key": "The generator loss is: g_loss = -mean(D(fake)) + mse_weight * mean((r_hat - y)^2). The first component is the negative of the discriminator's score on fake samples (adversarial loss), and the second component is the MSE between predicted and actual returns weighted by mse_weight (default 10.0).",
+      "required_facts": [
+        "g_loss = -torch.mean(d_fake) + mse_weight * mse",
+        "mse = torch.mean((r_hat - y) ** 2)",
+        "mse_weight has a default value of 10.0",
+        "The two components are the adversarial loss (negative critic score) and the MSE reconstruction loss"
+      ],
+      "difficulty": "detail"
+    },
+    {
+      "question": "What is the WGAN-GP gradient penalty formula implemented in the `_gradient_penalty` function? How does it enforce the Lipschitz constraint?",
+      "answer_key": "The function computes: gp_lambda * mean((||gradients||_2 - 1)^2). Gradients are computed as the gradients of the discriminator output D(x_hat) with respect to x_hat (which is the interpolated critic input), where x_hat is a linear interpolation between real and fake samples. The penalty encourages the gradient norm to be close to 1.",
+      "required_facts": [
+        "The formula is gp_lambda * ((gradient_norm - 1) ** 2).mean()",
+        "Gradients are computed via autograd.grad of D(x_hat) w.r.t. x_hat",
+        "x_hat is constructed via linear interpolation: alpha * real + (1 - alpha) * fake",
+        "alpha is a random tensor of shape (batch_size, 1) sampled uniformly in [0,1]"
+      ],
+      "difficulty": "detail"
+    },
+    {
+      "question": "How does the `eval_metrics` function compute the direction hit rate? What statistical test does it use to compute IC?",
+      "answer_key": "The direction hit rate is computed as the mean of (sign(pred) == sign(actual)). IC is computed using Spearman rank correlation (spearmanr from scipy.stats) between the predicted and actual returns across all samples in the validation loader.",
+      "required_facts": [
+        "direction_hit = mean(sign(pred_arr) == sign(y_arr))",
+        "IC uses scipy.stats.spearmanr",
+        "spearmanr is Spearman rank correlation (not Pearson)",
+        "IC defaults to 0.0 if fewer than 2 samples"
+      ],
+      "difficulty": "detail"
+    },
+    {
+      "question": "In `run_rolling_training`, why does the function compute both MSE via `eval_val_mse` and the full metrics suite via `eval_metrics`? Why not just use `eval_metrics` for all monitoring?",
+      "answer_key": "The function `run_rolling_training` calls `train_one_window` which uses `eval_metrics` for validation monitoring (computing IC, MSE, direction_hit). The separate `eval_val_mse` function exists in the module but is NOT called by `run_rolling_training`. `eval_val_mse` is a simpler function that only computes MSE and is available as a utility for other callers who might only need MSE without the overhead of computing IC and direction_hit.",
+      "required_facts": [
+        "train_one_window uses eval_metrics (not eval_val_mse) for validation",
+        "eval_val_mse only computes MSE and is not used by run_rolling_training",
+        "eval_val_mse exists as a standalone utility function",
+        "eval_metrics is called in train_one_window, not run_rolling_training itself"
+      ],
+      "difficulty": "logic"
+    },
+    {
+      "question": "What is the discriminator training strategy in `train_one_window` regarding the `n_critic` parameter? Why is `model.G(z).detach()` used inside the discriminator update loop?",
+      "answer_key": "For each batch, the discriminator is updated `n_critic` times while the generator is updated once. `detach()` is called on the generator output because gradients should not flow back to the generator during discriminator training -- only the discriminator parameters should be updated.",
+      "required_facts": [
+        "Discriminator runs n_critic updates for every batch",
+        "Generator runs once per batch",
+        "detach() prevents gradient flow into the generator during D updates",
+        "The strategy implements the WGAN alternating training scheme"
+      ],
+      "difficulty": "logic"
+    },
+    {
+      "question": "Why does the `_compute_test_metrics` function compute IC on a per-day basis (daily IC) and then average, rather than computing one global IC across all predictions?",
+      "answer_key": "Per-day IC is a standard financial metric because cross-sectional rank correlation should be computed within each day's universe of stocks, not across different trading days (which would mix different return distributions). The function groups by 'trade_date' and skips days with fewer than 5 stocks to ensure robust statistics.",
+      "required_facts": [
+        "IC is computed per day using groupby('trade_date')",
+        "Days with fewer than 5 stocks are skipped",
+        "Final IC is the mean of all daily ICs",
+        "This is the standard financial approach to avoid cross-temporal contamination"
+      ],
+      "difficulty": "logic"
+    },
+    {
+      "question": "How does the `_build_loader` function use the `build_sequences` function from the data module? What is the relationship between the generated z tensor shape and the timestep parameter?",
+      "answer_key": "_build_loader calls `build_sequences(df, factor_columns, timestep=timestep)` which returns FactorGanTensors with z of shape (N, T, F) where T=timestep (default 5). These tensors are wrapped in a TensorDataset and DataLoader. The z tensor represents N sequences, each of T time steps with F factor dimensions.",
+      "required_facts": [
+        "_build_loader calls build_sequences from factor_gan_lab.data",
+        "z shape is (N, timestep, len(factor_columns))",
+        "T = timestep parameter (default 5)",
+        "The dataset pairs z with y in a TensorDataset"
+      ],
+      "difficulty": "integration"
+    },
+    {
+      "question": "When `run_rolling_training` saves model checkpoints, what information is saved in the .pt file? How does this connect to the FactorGANConfig defined in the models module?",
+      "answer_key": "The .pt file saves a dictionary containing: 'cfg' (FactorGANConfig converted to dict via dataclasses.asdict), 'factor_columns' (list of column names), 'G' (generator state_dict), and 'D' (discriminator state_dict). The FactorGANConfig dataclass (defined in factor_gan_lab.models) contains structural hyperparameters like n_factors, lstm_hidden, timestep, etc. which are needed to reconstruct the model architecture for inference.",
+      "required_facts": [
+        "Saved dict contains: cfg, factor_columns, G state_dict, D state_dict",
+        "cfg is obtained via dataclasses.asdict(cfg)",
+        "cfg is a FactorGANConfig instance, created with n_factors=len(factor_columns)",
+        "FactorGANConfig is imported from factor_gan_lab.models"
+      ],
+      "difficulty": "integration"
+    }
+  ],
+  "recommended": [
+    {
+      "question": "What happens in `predict_window` when `build_sequences` returns no sequences (empty tensor)? What columns does the returned DataFrame always contain?",
+      "answer_key": "If len(tensors.z) == 0, it returns an empty DataFrame with columns ['ts_code', 'trade_date', 'y', 'y_pred']. Otherwise, it copies the meta DataFrame from tensors and adds a 'y_pred' column.",
+      "required_facts": [
+        "Empty check: if len(tensors.z) == 0 returns empty DataFrame with fixed columns",
+        "Returns tensors.meta copy with y_pred column added",
+        "Columns are: ts_code, trade_date, y, y_pred"
+      ],
+      "difficulty": "detail"
+    },
+    {
+      "question": "How does the early stopping logic work in `train_one_window`? What condition triggers stopping and how is the best model state restored?",
+      "answer_key": "After each epoch, if val_mse < best_val, the best state is saved (G and D state_dicts copied to CPU) and bad_epochs is reset to 0. If val_mse does not improve, bad_epochs increments. When bad_epochs >= patience (default 10), training stops. After training, the model's state is restored from best_state (if not None).",
+      "required_facts": [
+        "Early stop when bad_epochs >= patience",
+        "patience defaults to 10",
+        "Best state is saved when val_mse improves",
+        "State dicts are moved to CPU when saving: .detach().cpu()",
+        "After training loop, model loads best_state back"
+      ],
+      "difficulty": "detail"
+    },
+    {
+      "question": "Why are the Adam optimizer beta parameters set to (0.5, 0.9) instead of the default (0.9, 0.999) for both generator and discriminator optimizers in WGAN-GP training?",
+      "answer_key": "WGAN-GP training typically uses a lower beta1 value (0.5 instead of 0.9) to reduce momentum, which helps stabilize GAN training by preventing oscillations. The beta2 of 0.9 is also lower than the default 0.999, making the optimizer respond more quickly to gradient changes.",
+      "required_facts": [
+        "Both optimizers use betas=(0.5, 0.9)",
+        "This differs from PyTorch Adam defaults (0.9, 0.999)",
+        "Lower beta1 is standard practice for WGAN/WGAN-GP",
+        "Both generator and discriminator use lr (same learning rate)"
+      ],
+      "difficulty": "logic"
+    },
+    {
+      "question": "In `run_rolling_training`, how is the sliding window index calculated? What validation check ensures there are enough trading days before starting?",
+      "answer_key": "The number of windows is calculated as: (len(dates) - win_size) // step_days + 1, where win_size = train_days + val_days + test_days. A ValueError is raised if len(dates) < win_size. The max_windows parameter (default 0 = unlimited) can cap this number.",
+      "required_facts": [
+        "win_size = train_days + val_days + test_days",
+        "num_windows = (len(dates) - win_size) // step_days + 1",
+        "Raises ValueError if not enough dates",
+        "max_windows > 0 caps the number of windows"
+      ],
+      "difficulty": "logic"
+    },
+    {
+      "question": "How does the `training` module's `pick_device` function handle the 'auto' device argument? What does the FactorGANConfig's default gp_lambda value tell you about the expected training configuration?",
+      "answer_key": "pick_device with 'auto' is not a valid option -- the function checks for 'cpu' and 'cuda' strings, and if neither matches, it falls through to checking torch.cuda.is_available() which returns 'cuda' if available or 'cpu' otherwise. The gp_lambda default in FactorGANConfig is 10.0, which is the standard WGAN-GP gradient penalty coefficient from the original paper.",
+      "required_facts": [
+        "pick_device does not have an explicit 'auto' branch",
+        "Fallback: if device_arg is neither 'cpu' nor 'cuda', checks cuda availability",
+        "gp_lambda defaults to 10.0 in FactorGANConfig",
+        "10.0 is the standard WGAN-GP coefficient from the paper"
+      ],
+      "difficulty": "detail"
+    }
+  ]
+}

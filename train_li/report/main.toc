@@ -1,0 +1,107 @@
+\contentsline {section}{\numberline {1}项目背景与问题定义}{5}{section.1}%
+\contentsline {subsection}{\numberline {1.1}任务背景}{5}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}任务定义}{5}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}数据来源与股票池过滤}{5}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}预测标签构造}{6}{subsection.1.4}%
+\contentsline {subsection}{\numberline {1.5}数据集划分}{6}{subsection.1.5}%
+\contentsline {subsection}{\numberline {1.6}数据泄露防护}{6}{subsection.1.6}%
+\contentsline {subsection}{\numberline {1.7}交易成本模型}{7}{subsection.1.7}%
+\contentsline {subsection}{\numberline {1.8}评测指标体系}{7}{subsection.1.8}%
+\contentsline {section}{\numberline {2}数据预处理与特征工程}{8}{section.2}%
+\contentsline {subsection}{\numberline {2.1}路线A：26维多源特征融合}{8}{subsection.2.1}%
+\contentsline {subsubsection}{\numberline {2.1.1}两阶段归一化}{9}{subsubsection.2.1.1}%
+\contentsline {subsubsection}{\numberline {2.1.2}预处理增强}{9}{subsubsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.2}路线B：1维极简特征}{10}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}因果累积Max-Min归一化}{10}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Sigmoid全局归一化的系统性失效}{10}{subsubsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.3}两路线特征工程对比}{11}{subsection.2.3}%
+\contentsline {section}{\numberline {3}路线A：排序预测路线的探索（V1--V9）}{12}{section.3}%
+\contentsline {subsection}{\numberline {3.1}技术路线总览}{12}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}基线建立：GRU超参数搜索与多模型对比（V1--V2）}{12}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}V1：超参数网格搜索}{12}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}V2：特征扩展与架构对比}{12}{subsubsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.3}交易策略设计与风控（V3）}{13}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}Strategy B（动量止损）的确立}{13}{subsubsection.3.3.1}%
+\contentsline {subsubsection}{\numberline {3.3.2}失败方案的诊断价值}{14}{subsubsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.4}多窗口集成的可行性探索（V4）}{15}{subsection.3.4}%
+\contentsline {subsubsection}{\numberline {3.4.1}窗口对比实验}{15}{subsubsection.3.4.1}%
+\contentsline {subsubsection}{\numberline {3.4.2}放弃多窗口方向的三条理由}{15}{subsubsection.3.4.2}%
+\contentsline {subsubsection}{\numberline {3.4.3}意外的副产品——KNN Proxy验证空间注意力}{16}{subsubsection.3.4.3}%
+\contentsline {subsection}{\numberline {3.5}预处理体系重构：最大的单次突破（V5）}{16}{subsection.3.5}%
+\contentsline {subsubsection}{\numberline {3.5.1}缺陷根因：截面特征全部失效}{17}{subsubsection.3.5.1}%
+\contentsline {subsubsection}{\numberline {3.5.2}两阶段归一化}{17}{subsubsection.3.5.2}%
+\contentsline {subsubsection}{\numberline {3.5.3}伴随改进与效果}{17}{subsubsection.3.5.3}%
+\contentsline {subsection}{\numberline {3.6}空间注意力机制的设计与修正（V6）}{18}{subsection.3.6}%
+\contentsline {subsubsection}{\numberline {3.6.1}V1失败版：缺失瓶颈设计}{18}{subsubsection.3.6.1}%
+\contentsline {subsubsection}{\numberline {3.6.2}V2修正版：成功的关键}{18}{subsubsection.3.6.2}%
+\contentsline {subsection}{\numberline {3.7}标签修正与最优模型确立（V7）}{19}{subsection.3.7}%
+\contentsline {subsubsection}{\numberline {3.7.1}T+5标签的虚假繁荣}{19}{subsubsection.3.7.1}%
+\contentsline {subsubsection}{\numberline {3.7.2}重训结果与空间注意力的放大器效应}{20}{subsubsection.3.7.2}%
+\contentsline {subsubsection}{\numberline {3.7.3}N-K参数扫描}{20}{subsubsection.3.7.3}%
+\contentsline {subsection}{\numberline {3.8}失败的扩展尝试（V8--V9）}{21}{subsection.3.8}%
+\contentsline {subsubsection}{\numberline {3.8.1}V8：特征扩展与行业信息注入}{21}{subsubsection.3.8.1}%
+\contentsline {subsubsection}{\numberline {3.8.2}V9：售卖模型与微调}{22}{subsubsection.3.8.2}%
+\contentsline {subsection}{\numberline {3.9}版本迭代总结}{22}{subsection.3.9}%
+\contentsline {subsection}{\numberline {3.10}统一回测与信号质量分析}{24}{subsection.3.10}%
+\contentsline {subsubsection}{\numberline {3.10.1}信号质量对比}{24}{subsubsection.3.10.1}%
+\contentsline {subsubsection}{\numberline {3.10.2}日度IC时序分析}{24}{subsubsection.3.10.2}%
+\contentsline {subsubsection}{\numberline {3.10.3}月度IC稳定性}{25}{subsubsection.3.10.3}%
+\contentsline {subsection}{\numberline {3.11}版本迭代核心经验}{25}{subsection.3.11}%
+\contentsline {section}{\numberline {4}路线B：价格预测路线的探索（吴同学）}{25}{section.4}%
+\contentsline {subsection}{\numberline {4.1}技术路线总览}{25}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}模型架构：CNN-LSTM}{27}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}归一化方案的系统性对比}{27}{subsection.4.3}%
+\contentsline {subsubsection}{\numberline {4.3.1}方案一：因果累积Max-Min归一化}{28}{subsubsection.4.3.1}%
+\contentsline {subsubsection}{\numberline {4.3.2}方案二：全局Sigmoid归一化的系统性失效}{28}{subsubsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.4}训练策略的三阶段探索}{29}{subsection.4.4}%
+\contentsline {subsubsection}{\numberline {4.4.1}阶段一：全量数据训练（2016--2026）→ 过早收敛}{29}{subsubsection.4.4.1}%
+\contentsline {subsubsection}{\numberline {4.4.2}阶段二：单年训练 → 严重过参数化}{29}{subsubsection.4.4.2}%
+\contentsline {subsubsection}{\numberline {4.4.3}阶段三：3年混合训练 → 最终方案}{29}{subsubsection.4.4.3}%
+\contentsline {subsection}{\numberline {4.5}模型对比与序列长度分析}{30}{subsection.4.5}%
+\contentsline {subsubsection}{\numberline {4.5.1}CNN-LSTM vs 纯LSTM}{30}{subsubsection.4.5.1}%
+\contentsline {subsubsection}{\numberline {4.5.2}序列长度：L20 vs L60}{31}{subsubsection.4.5.2}%
+\contentsline {subsection}{\numberline {4.6}N-K参数分析：K无影响的独特发现}{31}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}统一回测的说明}{32}{subsection.4.7}%
+\contentsline {subsection}{\numberline {4.8}路线B的核心经验}{32}{subsection.4.8}%
+\contentsline {section}{\numberline {5}统一评测对比}{33}{section.5}%
+\contentsline {subsection}{\numberline {5.1}统一评测框架}{33}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}路线A内部模型对比}{33}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}信号质量对比}{33}{subsubsection.5.2.1}%
+\contentsline {subsubsection}{\numberline {5.2.2}月度IC稳定性}{34}{subsubsection.5.2.2}%
+\contentsline {subsubsection}{\numberline {5.2.3}IC分布对比}{34}{subsubsection.5.2.3}%
+\contentsline {subsubsection}{\numberline {5.2.4}累计收益曲线}{36}{subsubsection.5.2.4}%
+\contentsline {subsection}{\numberline {5.3}路线A vs 路线B：方法论维度对比}{36}{subsection.5.3}%
+\contentsline {subsubsection}{\numberline {5.3.1}“1维 vs 26维”的悖论}{36}{subsubsection.5.3.1}%
+\contentsline {subsubsection}{\numberline {5.3.2}特征哲学与架构哲学}{37}{subsubsection.5.3.2}%
+\contentsline {subsection}{\numberline {5.4}关键指标对比}{38}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}两条路线的互补性与融合方向}{38}{subsection.5.5}%
+\contentsline {subsection}{\numberline {5.6}本章小结}{39}{subsection.5.6}%
+\contentsline {section}{\numberline {6}模拟交易竞赛（2026年6月1日--12日）}{39}{section.6}%
+\contentsline {subsection}{\numberline {6.1}竞赛规则与操作流程}{39}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}竞赛期交易日志}{40}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}竞赛期收益分析}{41}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}竞赛截图记录}{42}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}竞赛反思与经验总结}{42}{subsection.6.5}%
+\contentsline {section}{\numberline {7}总结与反思}{44}{section.7}%
+\contentsline {subsection}{\numberline {7.1}我学到了什么}{44}{subsection.7.1}%
+\contentsline {subsubsection}{\numberline {7.1.1}数据比模型重要得多}{44}{subsubsection.7.1.1}%
+\contentsline {subsubsection}{\numberline {7.1.2}诚实的标签比好看的分数重要}{44}{subsubsection.7.1.2}%
+\contentsline {subsubsection}{\numberline {7.1.3}失败的次数远多于成功，但每次失败都值钱}{45}{subsubsection.7.1.3}%
+\contentsline {subsubsection}{\numberline {7.1.4}工程细节的累积效应}{45}{subsubsection.7.1.4}%
+\contentsline {subsection}{\numberline {7.2}模型的局限性}{45}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}最后}{46}{subsection.7.3}%
+\contentsline {section}{\numberline {8}失败的补充尝试：Factor-GAN}{46}{section.8}%
+\contentsline {subsection}{\numberline {8.1}设计动机}{46}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}模型架构}{47}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}损失函数}{47}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}数据流}{47}{subsection.8.4}%
+\contentsline {subsection}{\numberline {8.5}实验阶段1：CNN判别器与$\lambda $扫描}{47}{subsection.8.5}%
+\contentsline {subsubsection}{\numberline {8.5.1}$\lambda =1.0$（原始配置）}{47}{subsubsection.8.5.1}%
+\contentsline {subsubsection}{\numberline {8.5.2}$\lambda $递减扫描}{48}{subsubsection.8.5.2}%
+\contentsline {subsection}{\numberline {8.6}实验阶段2：LSTM判别器}{48}{subsection.8.6}%
+\contentsline {subsection}{\numberline {8.7}实验阶段3：扩大训练集}{48}{subsection.8.7}%
+\contentsline {subsection}{\numberline {8.8}关键发现}{48}{subsection.8.8}%
+\contentsline {subsubsection}{\numberline {8.8.1}真正带来提升的因素排序}{48}{subsubsection.8.8.1}%
+\contentsline {subsubsection}{\numberline {8.8.2}$\lambda $有效性的重新审视}{49}{subsubsection.8.8.2}%
+\contentsline {subsubsection}{\numberline {8.8.3}数据量的重要性}{49}{subsubsection.8.8.3}%
+\contentsline {subsection}{\numberline {8.9}实验总结与未解决问题}{49}{subsection.8.9}%
