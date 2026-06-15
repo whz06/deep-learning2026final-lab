@@ -208,12 +208,15 @@ def fig_competition(comp_daily, csi300_df):
     date_col = "return_date" if "return_date" in df.columns else "signal_date"
     df["cum"] = (1 + df["port_ret"]).cumprod()
 
-    # CSI300 for same period
-    csi_comp = None
-    if csi300_df is not None:
-        csi = csi300_df[csi300_df["trade_date"].between("20260601", "20260612")].copy()
-        if len(csi) > 0:
-            csi_comp = (1 + csi["idx_ret"].values / 100.0).cumprod()
+    # CSI300 June returns (from 搜狐股票历史行情)
+    june_csi300 = {
+        "20260601": -0.98, "20260602": 1.45, "20260603": 0.49,
+        "20260604": -0.69, "20260605": -1.79, "20260608": -2.14,
+        "20260609": 1.87, "20260610": -1.11, "20260611": -0.55,
+        "20260612": 1.16,
+    }
+    csi_returns = [june_csi300.get(d, 0.0) / 100.0 for d in df[date_col]]
+    csi_cum = (1 + np.array(csi_returns)).cumprod()
 
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(13, 7.5), sharex=True,
                                     gridspec_kw={"height_ratios": [1.1, 1.3]})
@@ -237,9 +240,8 @@ def fig_competition(comp_daily, csi300_df):
     # Bottom: cumulative line chart
     ax2.plot(x, df["cum"].values, "o-", color=MODEL_COLORS["V7 Spatial (T+1)"], linewidth=2.5, markersize=8,
              label="V7 Spatial 策略", zorder=3)
-    if csi_comp is not None and len(csi_comp) >= len(df):
-        ax2.plot(x, csi_comp[:len(df)], "s--", color=MODEL_COLORS["沪深300"], linewidth=2, markersize=6,
-                 label="沪深300基准", zorder=2)
+    ax2.plot(x, csi_cum, "s--", color=MODEL_COLORS["沪深300"], linewidth=2, markersize=6,
+             label="沪深300基准", zorder=2)
 
     ax2.axhline(y=1.0, color="black", linewidth=0.5, linestyle="--", alpha=0.3)
     for i, (d, c) in enumerate(zip(df[date_col], df["cum"])):
