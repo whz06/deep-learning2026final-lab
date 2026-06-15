@@ -1789,24 +1789,24 @@ GRU在60天窗口中的信息压缩率（$60\times26=1560\to1$）可能太高了
 路线A代码结构：
 \begin{verbatim}
 train_li/
-├── v1-v9/          各版本实验代码
-├── v7/models/      最优模型定义（gru\_spatial.py, spatial\_attn.py）
-├── v7/checkpoints/ 模型权重
-├── report/         报告与图表
-│   ├── score_v7spatial.py  V7 Spatial打分脚本
-│   ├── plot_report.py      图表生成脚本
-│   └── figures/            输出图表
-├── trade/          竞赛期每日推理
-└── shared/         共享工具（预处理等）
+  v1-v9/          各版本实验代码
+  v7/models/      最优模型定义 (gru_spatial.py, spatial_attn.py)
+  v7/checkpoints/ 模型权重
+  report/         报告与图表
+    score_v7spatial.py  V7 Spatial打分脚本
+    plot_report.py      图表生成脚本
+    figures/            输出图表
+  trade/          竞赛期每日推理
+  shared/         共享工具 (预处理等)
 \end{verbatim}
 
 路线B代码结构：
 \begin{verbatim}
 train_wu/CNN-LSTM/
-├── src/stock_predictor/  核心模块（data, models, trainer, strategy）
-├── train.py              训练入口
-├── backtest_n5k3.py      统一回测脚本
-└── result/               模型权重、回测结果
+  src/stock_predictor/  核心模块 (data, models, trainer, strategy)
+  train.py              训练入口
+  backtest_n5k3.py      统一回测脚本
+  result/               模型权重、回测结果
 \end{verbatim}
 
 环境要求：Python 3.11+, PyTorch 2.x, pandas, numpy, matplotlib。
