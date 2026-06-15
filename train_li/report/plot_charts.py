@@ -40,7 +40,7 @@ def save(fig, name):
     path = os.path.join(OUTDIR, name)
     fig.savefig(path, dpi=150, bbox_inches="tight")
     plt.close(fig)
-    print(f"  ✓ {name}")
+    print(f"  [OK] {name}")
 
 
 # ═══════════════════════════════════════════════════════════
@@ -53,13 +53,14 @@ def fig1_model_comparison():
 
     fig, ax = plt.subplots(figsize=(7, 5))
     bars = ax.bar(models, ics, color=colors, edgecolor="white", width=0.55, zorder=3)
+    ymax = max(ics)
     for bar, ic in zip(bars, ics):
-        ax.text(bar.get_x() + bar.get_width() / 2, ic + 0.002, f"{ic:.4f}",
+        ax.text(bar.get_x() + bar.get_width() / 2, ic + ymax * 0.03, f"{ic:.4f}",
                 ha="center", va="bottom", fontsize=12, fontweight="bold")
 
     ax.set_ylabel("Validation Rank IC", fontsize=12)
     ax.set_title("V2 多模型架构 Val IC 对比 (22-dim features)", fontsize=14, fontweight="bold")
-    ax.set_ylim(0, 0.13)
+    ax.set_ylim(0, ymax * 1.18)
     ax.grid(axis="y", alpha=0.3, zorder=0)
     ax.axhline(y=0.1029, color=COLORS["gru"], linestyle="--", alpha=0.5, linewidth=1, label=f"GRU best = 0.1029")
     ax.legend(fontsize=9, loc="upper right")
@@ -81,17 +82,18 @@ def fig2_version_ic_evolution():
     fig, ax1 = plt.subplots(figsize=(10, 5.5))
     x = np.arange(len(versions))
     w = 0.35
+    ymax = max(max(val_ic), max([v for v in test_ic_scaled if not np.isnan(v)]))
 
     bars1 = ax1.bar(x - w/2, val_ic, w, label="Val IC (T+5 for V5-V6, T+1 for V7)", color=COLORS["gru"], edgecolor="white", zorder=3)
     bars2 = ax1.bar(x + w/2, test_ic_scaled, w, label="Test T+1 IC (×2 scale)", color=COLORS["spatial"], edgecolor="white", zorder=3)
 
     # Add labels
     for bar, ic in zip(bars1, val_ic):
-        ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.002, f"{ic:.4f}",
+        ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + ymax * 0.02, f"{ic:.4f}",
                 ha="center", va="bottom", fontsize=8, fontweight="bold")
     for bar, ic_orig in zip(bars2, test_ic_adj):
         if not np.isnan(ic_orig):
-            ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.002, f"{ic_orig:.3f}",
+            ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + ymax * 0.02, f"{ic_orig:.3f}",
                     ha="center", va="bottom", fontsize=8, fontweight="bold", color=COLORS["spatial"])
 
     ax1.set_ylabel("Rank IC", fontsize=12)
@@ -100,10 +102,11 @@ def fig2_version_ic_evolution():
     ax1.set_xticklabels(versions, fontsize=9)
     ax1.legend(loc="upper right", fontsize=9)
     ax1.grid(axis="y", alpha=0.3, zorder=0)
+    ax1.set_ylim(0, ymax * 1.22)
 
     # Add vertical line separating T+5 and T+1
     ax1.axvline(x=3.5, color="red", linestyle="--", alpha=0.4, linewidth=1)
-    ax1.text(3.5, 0.125, "T+5→T+1\nLabel Switch", ha="center", fontsize=7, color="red", alpha=0.7)
+    ax1.text(3.5, ymax * 1.05, "T+5→T+1\nLabel Switch", ha="center", fontsize=7, color="red", alpha=0.7)
     save(fig, "fig2_version_ic_evolution.png")
 
 
@@ -117,24 +120,28 @@ def fig3_strategy_comparison():
     colors_list = [COLORS["baseline"], COLORS["tf"], COLORS["pos"], COLORS["spatial"]]
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+    ymax_r = max(returns)
+    ymax_s = max(sharpes)
 
     bars = ax1.bar(strategies, returns, color=colors_list, edgecolor="white", width=0.5, zorder=3)
     for bar, r in zip(bars, returns):
-        ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.15, f"+{r:.2f}%",
+        ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + ymax_r * 0.04, f"+{r:.2f}%",
                 ha="center", fontsize=11, fontweight="bold")
     ax1.set_ylabel("Cumulative Return (%)", fontsize=11)
     ax1.set_title("Strategy Comparison — Return (Feb-May 2026)", fontsize=12, fontweight="bold")
     ax1.grid(axis="y", alpha=0.3, zorder=0)
     ax1.tick_params(axis="x", labelsize=8)
+    ax1.set_ylim(0, ymax_r * 1.18)
 
     bars2 = ax2.bar(strategies, sharpes, color=colors_list, edgecolor="white", width=0.5, zorder=3)
     for bar, s in zip(bars2, sharpes):
-        ax2.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.02, f"{s:.2f}",
+        ax2.text(bar.get_x() + bar.get_width()/2, bar.get_height() + ymax_s * 0.04, f"{s:.2f}",
                 ha="center", fontsize=11, fontweight="bold")
     ax2.set_ylabel("Sharpe Ratio", fontsize=11)
     ax2.set_title("Strategy Comparison — Sharpe Ratio", fontsize=12, fontweight="bold")
     ax2.grid(axis="y", alpha=0.3, zorder=0)
     ax2.tick_params(axis="x", labelsize=8)
+    ax2.set_ylim(0, ymax_s * 1.18)
 
     fig.suptitle("V3 Strategy Backtesting Results", fontsize=14, fontweight="bold", y=1.02)
     save(fig, "fig3_strategy_comparison.png")
@@ -152,16 +159,18 @@ def fig4_window_comparison():
     fig, ax1 = plt.subplots(figsize=(8, 5))
     x = np.arange(len(windows))
     w = 0.35
+    ymax = max(ics)
 
     bars = ax1.bar(x, ics, w, color=[COLORS["tf"], COLORS["gru"], COLORS["baseline"]], edgecolor="white", zorder=3)
     for bar, ic in zip(bars, ics):
-        ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.001, f"IC={ic:.4f}",
+        ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + ymax * 0.03, f"IC={ic:.4f}",
                 ha="center", fontsize=10, fontweight="bold")
     ax1.set_ylabel("Mean Rank IC", fontsize=12)
     ax1.set_xticks(x)
     ax1.set_xticklabels(windows, fontsize=11)
     ax1.set_title("Multi-Window GRU IC Comparison (Test Period)", fontsize=14, fontweight="bold")
     ax1.grid(axis="y", alpha=0.3, zorder=0)
+    ax1.set_ylim(0, ymax * 1.2)
 
     ax2 = ax1.twinx()
     ax2.plot(x, rank_corrs, "o-", color=COLORS["spatial"], linewidth=2, markersize=10, label="Score Rank Corr (vs T=60)")
@@ -219,6 +228,7 @@ def fig6_spatial_v1_v2():
 
     fig, ax = plt.subplots(figsize=(9, 5.5))
     x = np.arange(len(configs))
+    ymax = max(ics)
     bars = ax.bar(x, ics, color=colors_list, edgecolor="white", width=0.55, zorder=3)
 
     for bar, ic, ch in zip(bars, ics, changes):
@@ -226,7 +236,7 @@ def fig6_spatial_v1_v2():
         label = f"{ic:.4f}"
         if ch != 0:
             label += f"\n({'↑' if ch>0 else '↓'}{abs(ch):.4f})"
-        ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.001,
+        ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + ymax * 0.02,
                label, ha="center", fontsize=9, fontweight="bold", color=color)
 
     ax.axhline(y=0.1114, color=COLORS["baseline"], linestyle="--", alpha=0.4, label="Baseline (0.1114)")
@@ -236,7 +246,7 @@ def fig6_spatial_v1_v2():
     ax.set_title("Spatial Attention V1→V2 修正效果 (d=32 bottleneck 是关键)", fontsize=14, fontweight="bold")
     ax.legend(fontsize=9)
     ax.grid(axis="y", alpha=0.3, zorder=0)
-    ax.set_ylim(0.105, 0.118)
+    ax.set_ylim(0.104, ymax * 1.06)
     save(fig, "fig6_spatial_v1_v2.png")
 
 
@@ -279,16 +289,18 @@ def fig8_cap_ic():
     fig, ax1 = plt.subplots(figsize=(7, 5))
     x = np.arange(len(caps))
     w = 0.35
+    ymax = max(ics)
 
     bars = ax1.bar(x - w/2, ics, w, color=[COLORS["gru"], COLORS["tf"], COLORS["spatial"]], edgecolor="white", zorder=3)
     for bar, ic in zip(bars, ics):
-        ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.001, f"IC={ic:.3f}",
+        ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + ymax * 0.03, f"IC={ic:.3f}",
                 ha="center", fontsize=11, fontweight="bold")
     ax1.set_ylabel("Test Rank IC", fontsize=12)
     ax1.set_xticks(x)
     ax1.set_xticklabels(caps, fontsize=10)
     ax1.set_title("V6 Spatial — IC by Market Cap Quantile (Feb-May 2026)", fontsize=13, fontweight="bold")
     ax1.grid(axis="y", alpha=0.3, zorder=0)
+    ax1.set_ylim(0, ymax * 1.2)
 
     ax2 = ax1.twinx()
     ax2.bar(x + w/2, ic_pos, w, color=["#90CAF9", "#FFE0B2", "#F48FB1"], edgecolor="white", alpha=0.6, zorder=3)
@@ -333,13 +345,8 @@ def fig9_nk_sweep_heatmap():
     for i in range(len(N_vals)):
         for j in range(len(K_vals)):
             if not mask[i, j]:
-                color = "white" if data[i, j] > 10 else "black"
                 ax.text(j, i, f"+{data[i,j]:.1f}%", ha="center", va="center",
-                       fontsize=12, fontweight="bold", color=color)
-
-    # Mark best
-    ax.scatter(1, 0, s=400, facecolors="none", edgecolors="black", linewidths=2.5, zorder=5)
-    ax.annotate("BEST", (1, -0.4), ha="center", fontsize=9, fontweight="bold", color="black")
+                       fontsize=12, fontweight="bold", color="black")
 
     ax.set_xticks(range(len(K_vals)))
     ax.set_xticklabels([f"K={k}" for k in K_vals], fontsize=12)
@@ -360,10 +367,12 @@ def fig10_monthly_decomposition():
     contributions = [85.7, 0, 7.4, 5.6, 4.9]
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+    ymax_r = max(net_returns)
+    ymin_r = min(net_returns)
 
     bars = ax1.bar(months, net_returns, color=colors_list, edgecolor="white", width=0.55, zorder=3)
     for bar, r in zip(bars, net_returns):
-        y = bar.get_height() + (1.5 if r > 0 else -3)
+        y = bar.get_height() + (ymax_r * 0.06 if r > 0 else ymin_r * 0.06)
         ax1.text(bar.get_x() + bar.get_width()/2, y, f"{r:+.1f}%",
                 ha="center", fontsize=11, fontweight="bold",
                 color=COLORS["pos"] if r > 0 else COLORS["neg"])
@@ -371,6 +380,7 @@ def fig10_monthly_decomposition():
     ax1.set_title("Monthly Net Return (N=5, K=3, th=-1.0%)", fontsize=12, fontweight="bold")
     ax1.grid(axis="y", alpha=0.3, zorder=0)
     ax1.axhline(y=0, color="black", linewidth=0.5)
+    ax1.set_ylim(ymin_r * 1.3, ymax_r * 1.2)
 
     # Pie chart for contributions (positive months only)
     pos_months = ["Jan\n85.7%", "Mar\n7.4%", "Apr\n5.6%", "May\n4.9%"]
@@ -431,16 +441,20 @@ def fig12_v8_vs_v7():
 
     for i, (ax, metric, v7, v8) in enumerate(zip(axes, metrics, v7_vals, v8_vals)):
         colors_list = [COLORS["v7"], COLORS["v8"]]
+        ymax = max(v7, v8)
         bars = ax.bar(["v7", "v8"], [v7, v8], color=colors_list, edgecolor="white", width=0.5, zorder=3)
         for bar, val in zip(bars, [v7, v8]):
             fmt = f"{val:.3f}" if isinstance(val, float) and val < 10 else f"{val:.2f}"
-            ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + (max(v7,v8)*0.03),
+            ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + ymax * 0.06,
                    fmt, ha="center", fontsize=10, fontweight="bold")
         ax.set_title(metric, fontsize=11, fontweight="bold")
         ax.grid(axis="y", alpha=0.3, zorder=0)
+        ax.set_ylim(0, ymax * 1.25)
         delta = v8 - v7
         color = COLORS["neg"] if delta < 0 else COLORS["pos"]
-        ax.set_ylabel(f"Δ={'↓' if delta<0 else '↑'}{abs(delta):.3f}", fontsize=8, color=color)
+        arrow = "↓" if delta < 0 else "↑"
+        ax.text(0.5, ymax * 0.92, f"{arrow}{abs(delta):.3f}", ha="center", fontsize=9,
+                color=color, fontweight="bold", transform=ax.get_xaxis_transform())
 
     fig.suptitle("V8 (31-dim + Industry Emb) vs V7 (26-dim) — 全面退步",
                 fontsize=14, fontweight="bold", y=1.02)
@@ -457,10 +471,12 @@ def fig13_loss_comparison():
 
     fig, ax = plt.subplots(figsize=(8, 5))
     x = np.arange(len(losses))
+    ymax = max(ics)
+    ymin = min(ics)
     bars = ax.bar(x, ics, color=colors_list, edgecolor="white", width=0.5, zorder=3)
 
     for bar, ic in zip(bars, ics):
-        y = bar.get_height() + (0.005 if ic > 0 else -0.015)
+        y = bar.get_height() + (ymax * 0.04 if ic > 0 else ymax * 0.04)
         ax.text(bar.get_x() + bar.get_width()/2, y, f"{ic:.4f}",
                ha="center", fontsize=12, fontweight="bold",
                color=COLORS["pos"] if ic > 0.05 else (COLORS["neg"] if ic < 0 else "black"))
@@ -473,10 +489,11 @@ def fig13_loss_comparison():
     ax.set_title("V8 损失函数对比 (31-dim, 完全相同的训练条件)", fontsize=14, fontweight="bold")
     ax.legend(fontsize=9)
     ax.grid(axis="y", alpha=0.3, zorder=0)
+    ax.set_ylim(ymin * 1.3, ymax * 1.2)
 
     # Red X over failed losses
-    ax.annotate("✗", (1, -0.01), fontsize=30, color=COLORS["neg"], ha="center", alpha=0.6)
-    ax.annotate("✗", (2, 0.05), fontsize=30, color=COLORS["neg"], ha="center", alpha=0.6)
+    ax.annotate("X", (1, -0.01), fontsize=30, color=COLORS["neg"], ha="center", alpha=0.6, fontweight="bold")
+    ax.annotate("X", (2, 0.05), fontsize=30, color=COLORS["neg"], ha="center", alpha=0.6, fontweight="bold")
     save(fig, "fig13_loss_comparison.png")
 
 
@@ -498,10 +515,12 @@ def fig14_feature_ic_ranking():
 
     fig, ax = plt.subplots(figsize=(10, 6))
     y_pos = range(len(features))
+    xmax = max(abs(v) for v in ics)
     bars = ax.barh(y_pos, ics, color=colors_list, edgecolor="white", height=0.7, zorder=3)
 
     for bar, ic in zip(bars, ics):
-        x = bar.get_width() + (0.001 if ic > 0 else -0.012)
+        offset = xmax * 0.03
+        x = bar.get_width() + (offset if ic > 0 else -xmax * 0.18)
         ax.text(x, bar.get_y() + bar.get_height()/2, f"{ic:+.4f}",
                va="center", fontsize=9, fontweight="bold",
                color=COLORS["pos"] if ic > 0 else COLORS["neg"])
@@ -514,6 +533,7 @@ def fig14_feature_ic_ranking():
                 fontsize=13, fontweight="bold")
     ax.axvline(x=0, color="black", linewidth=0.5)
     ax.grid(axis="x", alpha=0.3, zorder=0)
+    ax.set_xlim(-xmax * 1.35, xmax * 1.15)
     save(fig, "fig14_feature_ic_ranking.png")
 
 
@@ -589,10 +609,12 @@ def fig17_monthly_ic_trend():
 
     fig, ax = plt.subplots(figsize=(9, 5))
     x = np.arange(len(months))
+    ymax = max(ics)
+    ymin = min(ics)
     bars = ax.bar(x, ics, color=colors_list, edgecolor="white", width=0.55, zorder=3)
 
     for bar, ic, sig in zip(bars, ics, significance):
-        y = bar.get_height() + (0.008 if ic > 0 else -0.02)
+        y = bar.get_height() + (ymax * 0.08 if ic > 0 else ymin * 0.15)
         ax.text(bar.get_x() + bar.get_width()/2, y, f"{ic:+.3f} {sig}",
                ha="center", fontsize=11, fontweight="bold",
                color=COLORS["pos"] if ic > 0 else COLORS["neg"])
@@ -603,10 +625,11 @@ def fig17_monthly_ic_trend():
     ax.set_ylabel("Mean Rank IC", fontsize=12)
     ax.set_title("V7 Spatial — Monthly IC Trend (Jan-May 2026)\n(*** p<0.001, ns = not significant)", fontsize=13, fontweight="bold")
     ax.grid(axis="y", alpha=0.3, zorder=0)
+    ax.set_ylim(ymin * 1.8, ymax * 1.25)
 
     # Regime switch annotation
     ax.axvspan(2.5, 4.5, alpha=0.08, color="red")
-    ax.annotate("Regime Switch\n(IC→0)", (3.5, 0.08), ha="center", fontsize=10, color="red", alpha=0.7)
+    ax.annotate("Regime Switch\n(IC→0)", (3.5, ymax * 0.7), ha="center", fontsize=10, color="red", alpha=0.7)
     save(fig, "fig17_monthly_ic_trend.png")
 
 
@@ -614,7 +637,7 @@ def fig17_monthly_ic_trend():
 # MAIN
 # ═══════════════════════════════════════════════════════════
 if __name__ == "__main__":
-    print("📊 Generating charts for experiment report...")
+    print("Generating charts for experiment report...")
     print(f"   Output folder: {OUTDIR}\n")
 
     fig1_model_comparison()
@@ -635,4 +658,4 @@ if __name__ == "__main__":
     fig16_jan_decomposition()
     fig17_monthly_ic_trend()
 
-    print(f"\n✅ Done! {17} charts saved to {OUTDIR}/")
+    print(f"\nDone! 17 charts saved to {OUTDIR}/")

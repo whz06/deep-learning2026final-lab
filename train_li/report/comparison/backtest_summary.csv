@@ -1,0 +1,8 @@
+model,n_days,final_equity,annual_return_pct,sharpe,max_drawdown_pct
+V6_Spatial_N5,95,1.064,17.7,1.23,-13.84
+V6_Spatial_N10,95,1.089,25.2,1.45,-13.26
+V7_GRU_N5,95,1.189,58.4,2.33,-15.73
+V7_GRU_N10,95,1.237,75.7,2.81,-13.47
+V7_Spatial_N5,74,1.025,8.9,1.16,-13.94
+V7_Spatial_N10,74,0.946,-17.3,0.12,-11.95
+Wu_CNN-LSTM ⚠️,94,85.997,15348056.1,21.4,-14.64
