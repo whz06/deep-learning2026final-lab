@@ -1,11 +1,7 @@
-"""plot_competition_real.py — 按竞赛实际决策日志重建收益曲线（N/K混用）
+"""plot_competition_real.py — 按实际成交记录重建竞赛收益
 
-竞赛实际策略:
-  May 29 信号 → 初始建仓 N=20, K=5
-  Jun 1-2:    继续 N=20 模式 (风控触发时 N=16)
-  Jun 3 起:    切换为 N=5, K=3
-
-输出: figures/fig_competition.png (双面板: 日收益柱状图 + 累计收益折线)
+6月1日实际买入10只股票(见交易记录), 后续按N=5 K=3模型轮动.
+每日信号→次日开盘买入→当日收盘计算收益.
 """
 import os, sys, numpy as np, pandas as pd
 import matplotlib
@@ -30,20 +26,11 @@ plt.rcParams.update({
 
 COLORS = {"pos": "#4CAF50", "neg": "#F44336", "v7": "#EF5350", "csi300": "#9E9E9E"}
 
-# ── 实际每日策略参数 (from decision.log) ──
-# signal_date → (n_hold, k_rotate, risk_off)
-DAILY_PARAMS = {
-    "20260529": (20, 5, False),   # N=20 K=5 赛前建仓
-    "20260601": (16, 4, True),    # 风控 N=20×0.8=16 K=4
-    "20260602": (4,  2, True),    # 风控 减仓 N=4 K=2
-    "20260603": (5,  3, False),   # 切换 N=5 K=3
-    "20260604": (3,  3, False),   # N=3 K=3
-    "20260605": (3,  4, True),    # 风控 K=4
-    "20260608": (5,  3, False),   # 模型推荐 N=5 K=3
-    "20260609": (5,  3, False),
-    "20260610": (5,  3, False),
-    "20260611": (5,  3, False),
-}
+# 6月1日实际买入的10只股票
+JUNE1_HOLDINGS = [
+    "003030.SZ", "603029.SH", "300927.SZ", "603686.SH", "688616.SH",
+    "603048.SH", "002877.SZ", "688151.SH", "600319.SH", "605033.SH",
+]
 
 # CSI300 June returns
 JUNE_CSI300 = {
@@ -63,71 +50,72 @@ def main():
     ret_all = pd.read_parquet(PARQUET_ALL)
     ret_all["trade_date"] = ret_all["trade_date"].astype(str)
 
-    # Build return lookup by date
     ret_lookup = {}
     for d, g in ret_all.groupby("trade_date"):
         ret_lookup[d] = g.set_index("ts_code")["pct_chg"] / 100.0
 
-    # Dates to process (signal dates)
-    signal_dates = sorted(DAILY_PARAMS.keys())
-    # Also get all available dates for next-day lookups
     all_dates = sorted(ret_all["trade_date"].unique())
 
-    held = set()
+    # ── 逐日模拟 ──
+    # 方案: 每日用模型分数排序选股, 计算当日收盘收益
+    # 实际流程: 前一日收盘后跑模型 → 次日开盘买入 → 当日收盘计算收益
+
+    signal_dates = ["20260529", "20260601", "20260602", "20260603",
+                    "20260604", "20260605", "20260608", "20260609",
+                    "20260610", "20260611"]
+
+    held = set()        # 当前持仓
     daily_rows = []
 
     for i, signal_d in enumerate(signal_dates):
-        n_hold, k_rotate, risk_off = DAILY_PARAMS[signal_d]
-        n_target = max(1, int(n_hold * 0.8)) if risk_off else n_hold
-
-        # Find next trading day for return
+        # 收益日 = 信号日的下一个交易日
         try:
             next_idx = all_dates.index(signal_d) + 1
             if next_idx >= len(all_dates):
                 break
-            next_d = all_dates[next_idx]
+            return_d = all_dates[next_idx]
         except ValueError:
             continue
 
         day_scores = scores[scores["trade_date"] == signal_d].set_index("ts_code")["score"]
-        day_rets = ret_lookup.get(next_d, pd.Series(dtype=float))
-
-        if len(day_scores) < n_hold:
-            continue
+        day_rets = ret_lookup.get(return_d, pd.Series(dtype=float))
 
         if i == 0:
-            # First day: buy top-N
-            top_n = set(day_scores.nlargest(n_target).index) & set(day_rets.index)
-            port_ret = day_rets[list(top_n)].mean() if top_n else 0.0
-            cost = (0.00076 + 0.00026) * n_target / n_hold
-            held = top_n
+            # 6月1日: 使用实际买入的10只股票
+            effective = set(JUNE1_HOLDINGS) & set(day_rets.index)
+            held = effective
+            port_ret = day_rets[list(effective)].mean() if effective else 0.0
+            cost = (0.00076 + 0.00026) * 10 / 10  # 全仓买入成本
+            n_used, k_used = 10, 10
         else:
-            # Portfolio return from held stocks
+            # 后续: N=5 K=3 轮动
+            N, K = 5, 3
             held_valid = held & set(day_rets.index)
             port_ret = day_rets[list(held_valid)].mean() if held_valid else 0.0
 
-            # Rotate
-            top_n = set(day_scores.nlargest(n_target).index) & set(day_rets.index)
+            top_n = set(day_scores.nlargest(N).index) & set(day_rets.index)
             held_ranked = sorted(held_valid, key=lambda x: day_scores.get(x, -1e9))
-            to_sell = set(held_ranked[:k_rotate]) & held_valid
+            to_sell = set(held_ranked[:K]) & held_valid
             candidates = top_n - held_valid
-            to_buy = set(sorted(candidates, key=lambda x: day_scores.get(x, -1e9), reverse=True)[:k_rotate])
+            to_buy = set(sorted(candidates, key=lambda x: day_scores.get(x, -1e9), reverse=True)[:K])
             n_traded = max(len(to_sell), len(to_buy))
-            cost = (0.00076 + 0.00026) * n_traded / n_hold
+            cost = (0.00076 + 0.00026) * n_traded / N
             held = (held_valid - to_sell) | to_buy
+            n_used, k_used = N, K
 
         port_ret_net = port_ret - cost
         daily_rows.append({
-            "return_date": next_d,
+            "return_date": return_d,
             "port_ret": port_ret_net,
             "port_ret_gross": port_ret,
         })
-        print(f"  {signal_d}→{next_d}  N={n_target} K={k_rotate}  ret={port_ret_net*100:+.2f}%")
+        held_list = ", ".join(sorted(held)[:3]) + ("..." if len(held) > 3 else "")
+        print(f"  {signal_d}→{return_d}  held={len(held)}  "
+              f"ret={port_ret_net*100:+.2f}%  [{held_list}]")
 
     df = pd.DataFrame(daily_rows)
     if len(df) == 0:
-        print("[!] No data")
-        return
+        print("[!] No data"); return
 
     df["cum"] = (1 + df["port_ret"]).cumprod()
 
@@ -147,7 +135,7 @@ def main():
     ax1.bar(x, daily_pct, color=colors_bar, edgecolor="white", width=0.55, zorder=3)
     ax1.axhline(y=0, color="black", linewidth=0.5)
     for i, (d, r) in enumerate(zip(df["return_date"], daily_pct)):
-        y = r + (0.35 if r >= 0 else -0.7)
+        y = r + (0.4 if r >= 0 else -0.8)
         ax1.text(i, y, f"{r:+.1f}%", ha="center", fontsize=9,
                  fontweight="bold", color=COLORS["pos"] if r >= 0 else COLORS["neg"])
     ax1.set_ylabel("日收益率 (%)", fontsize=12)
@@ -155,7 +143,7 @@ def main():
     ax1.grid(axis="y", alpha=0.2)
 
     ax2.plot(x, df["cum"].values, "o-", color=COLORS["v7"], linewidth=2.5, markersize=8,
-             label="V7 Spatial 策略 (N=20→5, K=5→3)", zorder=3)
+             label="V7 Spatial 策略", zorder=3)
     ax2.plot(x, csi_cum, "s--", color=COLORS["csi300"], linewidth=2, markersize=6,
              label="沪深300基准", zorder=2)
 
@@ -174,7 +162,10 @@ def main():
     fig.savefig(path, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"[*] Saved {path}")
-    print(f"[*] Final: {df['cum'].iloc[-1]:.4f}x  ({(df['cum'].iloc[-1]-1)*100:+.2f}%)")
+
+    final = (df["cum"].iloc[-1] - 1) * 100
+    csi_final = (csi_cum[-1] - 1) * 100
+    print(f"[*] 策略累计: {final:+.2f}%  沪深300: {csi_final:+.2f}%")
 
 
 if __name__ == "__main__":
