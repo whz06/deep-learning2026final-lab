@@ -217,6 +217,7 @@ def fig_competition(comp_daily, csi300_df):
 
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(13, 7.5), sharex=True,
                                     gridspec_kw={"height_ratios": [1.1, 1.3]})
+    fig.subplots_adjust(top=0.92)
 
     x = range(len(df))
     daily_pct = df["port_ret"].values * 100
@@ -245,14 +246,12 @@ def fig_competition(comp_daily, csi300_df):
         ax2.annotate(f"{c:.4f}", (i, c), textcoords="offset points",
                      xytext=(0, 12), fontsize=8, ha="center", fontweight="bold")
     ax2.set_xticks(x)
-    ax2.set_xticklabels([f"6/{d[4:6]}" for d in df[date_col]], fontsize=10)
+    ax2.set_xticklabels([f"6/{d[6:8]}" for d in df[date_col]], fontsize=10)
     ax2.set_ylabel("累计收益 (倍)", fontsize=12)
     ax2.set_xlabel("日期", fontsize=12)
     ax2.grid(alpha=0.2)
     ax2.legend(fontsize=10, loc="upper left")
 
-    final_ret = (df["cum"].iloc[-1] - 1) * 100
-    fig.suptitle(f"竞赛最终收益: {final_ret:+.2f}%", fontsize=12, color="#555", y=1.01)
     save(fig, "fig_competition.png")
 
 
@@ -541,7 +540,7 @@ def main():
 
         # Compute N-K backtest equity
         if returns_next is not None:
-            eq = run_nk_backtest(scores, returns_next, csi5d_map, N_HOLD, K_ROTATE)
+            eq = run_nk_backtest(scores, returns_df, csi5d_map, N_HOLD, K_ROTATE)
             eq = eq[eq["signal_date"].between(START, END)]
             model_equity[name] = eq
             if len(eq) > 0:
@@ -595,8 +594,8 @@ def main():
             scores = scores[scores["trade_date"].between(COMP_SCORE_START, COMP_END)]
             if len(scores) == 0:
                 continue
-            if returns_next is not None:
-                comp_eq = run_nk_backtest(scores, returns_next, csi5d_map, N_HOLD, K_ROTATE)
+            if returns_df is not None:
+                comp_eq = run_nk_backtest(scores, returns_df, csi5d_map, N_HOLD, K_ROTATE)
                 if len(comp_eq) == 0:
                     continue
                 # Map signal_date → actual return date
